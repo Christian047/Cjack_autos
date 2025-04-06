@@ -15,9 +15,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-$w_k8b_okbj_80p3f-v!py^!*1kg*p&$v7)res!rvqq4de*!2j'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
+# DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 
@@ -102,23 +103,23 @@ AUTHENTICATION_BACKENDS = [
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
-
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'Newdb',   #The name of your database
-        'USER': 'postgres', #This remains postgres
-        'PASSWORD': 'Padiga047!', #The password of your pgadmin
-        'HOST': 'localhost',
-        'PORT': '5432',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'Newdb',   #The name of your database
+#         'USER': 'postgres', #This remains postgres
+#         'PASSWORD': 'Padiga047!', #The password of your pgadmin
+#         'HOST': 'localhost',
+#         'PORT': '5432',
+#     }
+# }
 
 
 
