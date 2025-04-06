@@ -1,0 +1,356 @@
+{% extends 'main.html' %}
+
+{% block content %}
+
+{% load humanize %}
+<br>
+<br>
+<br>
+
+<h1 class="text-center m-4">{{ car_model.name }} Parts</h1>
+
+
+
+
+
+  <!-- Products container -->
+  <section class= 'm-4'>
+    <div class="row gy-4 portfolio-container" data-aos="fade-up" data-aos-delay="200">
+    {% for product in products %}
+      <!-- Improved Dynamic Product Card -->
+      <div class="col-sm-4 col-md-4 col-lg-4 mb-4 portfolio-item filter-{{product.cat|slugify}}">
+        <div class="p-display">
+          <!-- Trending Badge -->
+          {% comment %} {% if product.is_trending %} {% endcomment %}
+          <div class="trending-badge">
+            <div class="trending-label">
+              <span>Trending</span>
+            </div>
+          </div>
+          {% comment %} {% endif %} {% endcomment %}
+    
+          <!-- Discount Badge -->
+          {% if product.discount_percentage > 0 %}
+          <div class="discount-badge">-{{product.discount_percentage}}%</div>
+          {% endif %}
+    
+          <!-- Image section -->
+          <div class="product-image-container">
+            <img src="{{ product.picture.url }}" class="product-img" alt="{{ product.name }}">
+    
+            <!-- Action Buttons -->
+            <button class="wishlist-btn {% if product.id in wishlist_product_ids %}active{% endif %}"
+              data-product="{{ product.id }}">
+              <i
+                class="bi {% if product.id in wishlist_product_ids %}bi-heart-fill text-danger{% else %}bi-heart{% endif %}"></i>
+            </button>
+    
+            <button class="quick-view-btn" data-bs-toggle="modal" data-bs-target="#quickViewModal{{ product.id }}">
+              <a href="{% url 'single_product' product.pk %}"><i class="bi bi-eye"></i></a>
+            </button>
+    
+            <!-- Stock Status -->
+            {% if product.stock_quantity <= 0 %} <div class="out-of-stock-label">Out of Stock
+          </div>
+          {% else %}
+          <div class="low-stock-label">Only {{ product.stock_quantity }} left</div>
+          {% endif %}
+        </div>
+    
+        <!-- Product info -->
+        <div class="card-body">
+          <div class="row">
+            <div class="col-6">
+              <h5 class="product-title"><a href="{% url 'single_product' product.pk %}">{{product.name}}</a></h5>
+              <p class="product-category text-muted">{{product.cat}}</p>
+    
+              <!-- Product Rating -->
+              <div class="product-rating">
+                {% for i in '12345'|make_list %}
+                {% if forloop.counter <= product.rating_value %} <i class="bi bi-star-fill text-warning"></i>
+                  {% else %}
+                  <i class="bi bi-star text-warning"></i>
+                  {% endif %}
+                  {% endfor %}
+                  <span class="rating-count">({{ product.rating_count }})</span>
+              </div>
+            </div>
+            <div class="col-6 price-section">
+              <!-- Price with Original Price if Discounted -->
+              {% load humanize %}
+    
+              {% if product.original_price %}
+              <h4 class="current-price">₦{{product.price|intcomma}}</h4>
+              <small class="original-price">₦{{ product.original_price|intcomma }}</small>
+              {% else %}
+              <h4 class="current-price">₦{{product.price|intcomma}}</h4>
+              {% endif %}
+              <div class="model-info"><a href="{% url 'car_model' product.pk %}">{{product.car_model}}</a></div>
+            </div>
+          </div>
+        </div>
+    
+        <!-- Card Footer -->
+        <div class="card-footer">
+          <a href="{% url 'single_product' product.pk %}" class="readmore">
+            <span>Read More</span>
+            <i class="bi bi-arrow-right"></i>
+          </a>
+          <button class="btn btn-primary gradient-btn update-cart" data-product="{{product.id}}" data-action="add">
+            <i class="bi bi-cart-plus"></i> Add to Cart
+          </button>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+    </div>
+    
+    <!-- CSS for the improved card design -->
+    <style>
+      /* Minor UX Improvements */
+      .p-display {
+        border-radius: 10px;
+        box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+        transition: all 0.3s ease;
+        margin-bottom: 15px;
+        position: relative;
+      }
+    
+      .p-display:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+      }
+    
+      /* Image container */
+      .product-image-container {
+        position: relative;
+        height: 220px;
+        background-color: #ffffff;
+        overflow: hidden;
+      }
+    
+      .product-img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        transition: transform 0.5s ease;
+        padding: 10px;
+      }
+    
+      .p-display:hover .product-img {
+        transform: scale(1.05);
+      }
+    
+      /* Stock labels */
+      .low-stock-label,
+      .out-of-stock-label {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 6px 8px;
+        color: white;
+        font-size: 12px;
+        text-align: center;
+        font-weight: 600;
+      }
+    
+      .out-of-stock-label {
+        background-color: rgba(231, 76, 60, 0.85);
+      }
+    
+      .low-stock-label {
+        background-color: rgba(243, 156, 18, 0.85);
+      }
+    
+      /* Badges */
+      .trending-badge {
+        position: absolute;
+        top: 0;
+        left: -5px;
+        z-index: 2;
+      }
+    
+      .trending-label {
+        background: linear-gradient(45deg, #ff6b6b, #ff9f43);
+        color: white;
+        font-weight: bold;
+        font-size: 13px;
+        padding: 5px 15px;
+        border-radius: 0 0 20px 0;
+        position: relative;
+      }
+    
+      .trending-label:before {
+        content: '';
+        position: absolute;
+        left: 0;
+        bottom: -5px;
+        border-top: 5px solid #e05252;
+        border-left: 5px solid transparent;
+        filter: brightness(0.8);
+      }
+    
+      .discount-badge {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background-color: #e74c3c;
+        color: white;
+        border-radius: 50%;
+        width: 45px;
+        height: 45px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        z-index: 2;
+      }
+    
+      /* Action buttons */
+      .wishlist-btn,
+      .quick-view-btn {
+        position: absolute;
+        background: white;
+        border-radius: 50%;
+        width: 35px;
+        height: 35px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        opacity: 0;
+        transition: all 0.3s ease;
+        border: none;
+      }
+    
+      .wishlist-btn {
+        top: 10px;
+        right: 10px;
+        z-index: 2;
+      }
+    
+      .quick-view-btn {
+        top: 10px;
+        right: 55px;
+        z-index: 2;
+      }
+    
+      .p-display:hover .wishlist-btn,
+      .p-display:hover .quick-view-btn {
+        opacity: 1;
+      }
+    
+      .wishlist-btn.active {
+        opacity: 1;
+      }
+    
+      /* Card body */
+      .card-body {
+        padding: 12px 15px;
+      }
+    
+      /* Product info */
+      .product-title {
+        font-weight: 600;
+        margin-bottom: 2px;
+        font-size: 16px;
+      }
+    
+      .product-title a {
+        color: #333;
+        text-decoration: none;
+    
+      }
+    
+      .product-title a:hover {
+        color: #3498db;
+      }
+    
+      .product-category {
+        font-size: 13px;
+        color: #777;
+        margin-bottom: 4px;
+      }
+    
+      /* Rating */
+      .product-rating {
+        margin-top: 4px;
+      }
+    
+      .rating-count {
+        font-size: 0.8rem;
+        color: #777;
+        margin-left: 5px;
+      }
+    
+      /* Price section */
+      .price-section {
+        text-align: right;
+      }
+    
+      .current-price {
+        font-family: poppins, sans-serif;
+        font-weight: bold;
+        font-size: 18px;
+        margin-bottom: 0;
+        color: #222;
+      }
+    
+      .original-price {
+        text-decoration: line-through;
+        color: #888;
+        font-size: 14px;
+      }
+    
+      .model-info {
+        color: #777;
+        font-size: 12px;
+        margin-top: 3px;
+      }
+    
+      /* Card footer */
+      .card-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 15px;
+        background-color: #f8f9fa;
+        border-top: 1px solid rgba(0, 0, 0, 0.05);
+      }
+    
+      /* Read more link */
+      .readmore {
+        color: #555;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+      }
+    
+      .readmore i {
+        margin-left: 5px;
+        transition: transform 0.2s;
+      }
+    
+      .readmore:hover i {
+        transform: translateX(3px);
+      }
+    
+      /* Add to cart button */
+      .gradient-btn {
+        background: linear-gradient(45deg, #3498db, #2980b9);
+        border: none;
+        transition: all 0.3s ease;
+        padding: 6px 12px;
+        font-size: 14px;
+      }
+    
+      .gradient-btn:hover {
+        background: linear-gradient(45deg, #2980b9, #3498db);
+        transform: translateY(-2px);
+      }
+    </style>
+  </section>
+
+{% endblock content %}

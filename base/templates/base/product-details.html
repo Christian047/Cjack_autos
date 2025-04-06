@@ -1,0 +1,82 @@
+{% extends 'main.html' %} 
+{% load static %} {% block content %}
+
+<body>
+
+
+
+  <main id="main">
+
+    <!-- ======= Breadcrumbs ======= -->
+    <section class="breadcrumbs">
+      <div class="container">
+
+        <ol>
+          <li><a href="index.html">Home</a></li>
+          <li>Portfolio Details</li>
+        </ol>
+        <h2>Portfolio Details</h2>
+
+      </div>
+    </section><!-- End Breadcrumbs -->
+
+
+    
+    <!-- ======= Portfolio Details Section ======= -->
+    <section id="portfolio-details" class="portfolio-details">
+      <div class="container">
+
+        <div class="row gy-4">
+
+          <div class="col-lg-8">
+            <div class="portfolio-details-slider swiper">
+              <div class="swiper-wrapper align-items-center">
+
+                <div class="swiper-slide">
+                  <img src="{{single_product.picture.url}}" alt="">
+                </div>
+
+                <div class="swiper-slide">
+                  <img src="{{single_product.picture.url}}" alt="">
+                </div>
+
+                <div class="swiper-slide">
+                  <img src="{{single_product.picture.url}}" alt="">
+                </div>
+
+              </div>
+              <div class="swiper-pagination"></div>
+            </div>
+          </div>
+
+
+   
+          <div class="col-lg-4">
+            <div class="portfolio-info">
+              <h3>{{single_product.name}}</h3>
+              <ul>
+                <li><strong>Category</strong>: {{single_product.cat}}</</li>
+                <li><strong>Model</strong>:  {{single_product.model}}</</li>
+                <li><strong>Chassis</strong>:  {{single_product.chassis}}</li>
+                <li><strong>Car Model</strong>: <a href="{% url 'car_model' single_product.pk %}">{{single_product.car_model}}</a></li>
+                <li><strong>Project URL</strong>: <a href="#">www.example.com</a></li>
+              </ul>
+            </div>
+            <div class="portfolio-description">
+
+              <p>
+           The premium <span class="">{{single_product.name}}</span> is designed for durability, precision, and a perfect fit for your Mercedes.
+              </p>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section><!-- End Portfolio Details Section -->
+
+  </main><!-- End #main -->
+
+</body>
+
+{% endblock content %}

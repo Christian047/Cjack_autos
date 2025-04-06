@@ -1,0 +1,397 @@
+{% extends 'main.html' %}
+{% load static %}
+{% block content %}
+{% load humanize %}
+
+<br>
+<br>
+<section id="wishlist" class="wishlist-section">
+  <div class="container" data-aos="fade-up">
+    <header class="section-header">
+      <h2>My Wishlist</h2>
+      <p>Your Favorite Items</p>
+    </header>
+    
+    <div class="d-flex justify-content-end mb-3">
+      <button id="download-wishlist" class="btn download-image-button">
+        <i class="bi bi-download"></i> Download as Image
+      </button>
+    </div>
+
+    <div class="row">
+      <div class="col-lg-12">
+        {% if wishlist_items %}
+        <div class="table-responsive wishlist-table">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Image</th>
+                <th>Product</th>
+                <th>Price</th>
+                <th>Stock Status</th>
+            
+              </tr>
+            </thead>
+            <tbody>
+              {% for item in wishlist_items %}
+              <tr class="wishlist-item" data-product-id="{{ item.product.id }}">
+                <td class="product-image">
+                  <a href="{% url 'single_product' item.product.pk %}">
+                    <img src="{{ item.product.picture.url }}" alt="{{ item.product.name }}" class="img-fluid">
+                    
+                    {% if item.product.discount_percentage > 0 %}
+                    <span class="discount-badge">-{{ item.product.discount_percentage }}%</span>
+                    {% endif %}
+                  </a>
+                </td>
+                
+                <td class="product-info">
+                  <h5 class="product-title">
+                    <a href="{% url 'single_product' item.product.pk %}">{{ item.product.name }}</a>
+                  </h5>
+                  <p class="product-category">{{ item.product.cat }}</p>
+                  <div class="model-info">
+                    <a href="{% url 'car_model' item.product.pk %}">{{ item.product.car_model }}</a>
+                  </div>
+                </td>
+                
+                <td class="product-price">
+                  {% if item.product.original_price %}
+                  <h5 class="current-price">₦{{ item.product.price|intcomma }}</h5>
+                  <small class="original-price">₦{{ item.product.original_price|intcomma }}</small>
+                  {% else %}
+                  <h5 class="current-price">₦{{ item.product.price|intcomma }}</h5>
+                  {% endif %}
+                </td>
+                
+                <td class="product-stock">
+                  {% if item.product.stock_quantity <= 0 %}
+                  <span class="badge bg-danger">Out of Stock</span>
+                  {% elif item.product.stock_quantity <= 20 %}
+                  <span class="badge bg-warning text-dark">Low Stock ({{ item.product.stock_quantity }})</span>
+                  {% else %}
+                  <span class="badge bg-success">In Stock</span>
+                  {% endif %}
+                </td>
+
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% else %}
+        <div class="empty-wishlist">
+          <div class="text-center py-5">
+            <i class="bi bi-heart" style="font-size: 3rem; color: #ccc;"></i>
+            <h3 class="mt-3">Your wishlist is empty</h3>
+            <p class="text-muted">Add items to your wishlist to keep track of products you're interested in.</p>
+            <a href="{% url 'store' %}" class="btn btn-primary mt-3">Continue Shopping</a>
+          </div>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* Wishlist Table Styling */
+  .wishlist-section {
+    padding: 60px 0;
+  }
+
+  .section-header {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+
+  .section-header h2 {
+    font-size: 13px;
+    letter-spacing: 1px;
+    font-weight: 700;
+    color: #4154f1;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+  }
+
+  .section-header p {
+    font-size: 38px;
+    font-weight: 700;
+    color: #012970;
+    margin-bottom: 0;
+  }
+
+  .wishlist-table {
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .wishlist-table table {
+    margin-bottom: 0;
+  }
+
+  .wishlist-table thead {
+    background-color: #f8f9fa;
+  }
+
+  .wishlist-table th {
+    font-weight: 600;
+    padding: 15px;
+    border-bottom: 2px solid #dee2e6;
+    color: #495057;
+  }
+
+  .wishlist-item {
+    transition: background-color 0.3s;
+  }
+
+  .wishlist-item:hover {
+    background-color: #f9f9f9;
+  }
+
+  .wishlist-item td {
+    vertical-align: middle;
+    padding: 15px;
+  }
+
+  /* Product Image */
+  .product-image {
+    width: 100px;
+    position: relative;
+  }
+
+  .product-image img {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+    border-radius: 5px;
+    transition: transform 0.3s;
+  }
+
+  .product-image:hover img {
+    transform: scale(1.05);
+  }
+
+  .discount-badge {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background-color: #e74c3c;
+    color: white;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 10px;
+  }
+
+  /* Product Info */
+  .product-title {
+    font-weight: 600;
+    margin-bottom: 2px;
+    font-size: 16px;
+  }
+
+  .product-title a {
+    color: #333;
+    text-decoration: none;
+  }
+
+  .product-title a:hover {
+    color: #3498db;
+  }
+
+  .product-category {
+    font-size: 13px;
+    color: #777;
+    margin-bottom: 4px;
+  }
+
+  .model-info a {
+    color: #777;
+    font-size: 12px;
+    text-decoration: none;
+  }
+
+  .model-info a:hover {
+    color: #3498db;
+  }
+
+  /* Product Price */
+  .current-price {
+    font-family: poppins, sans-serif;
+    font-weight: bold;
+    font-size: 16px;
+    margin-bottom: 0;
+    color: #222;
+  }
+
+  .original-price {
+    text-decoration: line-through;
+    color: #888;
+    font-size: 14px;
+    display: block;
+  }
+
+  /* Rating */
+  .rating-stars {
+    display: inline-block;
+  }
+
+  .rating-count {
+    font-size: 0.8rem;
+    color: #777;
+    margin-left: 5px;
+  }
+
+
+
+  .btn-primary {
+    background: linear-gradient(45deg, #3498db, #2980b9);
+    border: none;
+    transition: all 0.3s ease;
+  }
+
+  .btn-primary:hover {
+    background: linear-gradient(45deg, #2980b9, #3498db);
+    transform: translateY(-2px);
+  }
+
+  .btn-danger {
+    background: linear-gradient(45deg, #e74c3c, #c0392b);
+    border: none;
+  }
+
+  .btn-danger:hover {
+    background: linear-gradient(45deg, #c0392b, #e74c3c);
+    transform: translateY(-2px);
+  }
+
+  /* Empty Wishlist */
+  .empty-wishlist {
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+  }
+
+  /* Responsive fixes */
+  @media (max-width: 767px) {
+    .section-header p {
+      font-size: 28px;
+    }
+    
+    .wishlist-table th,
+    .wishlist-table td {
+      padding: 10px;
+    }
+    
+    .action-buttons {
+      flex-direction: row;
+    }
+    
+    .action-buttons .btn {
+      width: auto;
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Remove from wishlist
+    const removeButtons = document.querySelectorAll('.remove-from-wishlist');
+    removeButtons.forEach(button => {
+      button.addEventListener('click', function() {
+        const productId = this.dataset.product;
+        // Call your remove from wishlist function here
+        // Example:
+        removeFromWishlist(productId);
+      });
+    });
+
+    function removeFromWishlist(productId) {
+      fetch(`/remove-from-wishlist/${productId}/`, {
+        method: 'POST',
+        headers: {
+          'X-CSRFToken': getCookie('csrftoken'),
+          'Content-Type': 'application/json'
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          // Remove the row from the table
+          const row = document.querySelector(`.wishlist-item[data-product-id="${productId}"]`);
+          if (row) {
+            row.remove();
+          }
+          
+          // If there are no more items, show the empty wishlist message
+          const items = document.querySelectorAll('.wishlist-item');
+          if (items.length === 0) {
+            location.reload(); // Reload to show empty state
+          }
+        }
+      })
+      .catch(error => console.error('Error:', error));
+    }
+
+    // Download wishlist as image
+    document.getElementById('download-wishlist').addEventListener('click', function() {
+      // First add a class to make the wishlist table look good for the screenshot
+      const wishlistTable = document.querySelector('.wishlist-table');
+      wishlistTable.classList.add('screenshot-ready');
+      
+      // Hide the download button for the screenshot
+      this.style.display = 'none';
+      
+      // Use html2canvas to capture the table
+      html2canvas(document.querySelector('.wishlist-section'), {
+        scale: 2, // Higher resolution
+        useCORS: true, // To load images from other domains
+        allowTaint: true,
+        backgroundColor: '#ffffff',
+        logging: false
+      }).then(canvas => {
+        // Remove the screenshot class and show the button again
+        wishlistTable.classList.remove('screenshot-ready');
+        this.style.display = 'block';
+        
+        // Create download link
+        const link = document.createElement('a');
+        link.download = 'my-wishlist.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+      }).catch(err => {
+        console.error('Something went wrong', err);
+        alert('Could not download the image. Please try again.');
+        // Restore display
+        wishlistTable.classList.remove('screenshot-ready');
+        this.style.display = 'block';
+      });
+    });
+
+    // Helper function to get CSRF token
+    function getCookie(name) {
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+          const cookie = cookies[i].trim();
+          if (cookie.substring(0, name.length + 1) === (name + '=')) {
+            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+            break;
+          }
+        }
+      }
+      return cookieValue;
+    }
+  });
+</script>
+
+<!-- Add html2canvas library for screenshot functionality -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+{% endblock content %}

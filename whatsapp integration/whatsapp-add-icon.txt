@@ -1,0 +1,43 @@
+Step 1: Works with font-awesome CSS :
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" integrity="sha512-MV7K8+y+gLIBoVD59lQIYicR65iaqukzvf/nwasF0nqhPay5w/9lJmVM2hMDcnK1OnMGCdVK+iQrJ7lzPJQd1w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+
+Step 2: Add following HTML code: to main
+<a href="https:/wa.me/+2348027989868"  target="_blank" class="whatsapp_float"><i class="fa-brands fa-whatsapp whatsapp-icon"></i></a>
+
+Note: please make sure to add the whatsapp font icon class from https://fontawesome.com/
+
+Step 3: Add the following CSS code:
+
+      .whatsapp_float {
+        position: fixed;
+        width: 70px; /* Increased width */
+        height: 70px; /* Increased height */
+        bottom: 40px;
+        right: 40px;
+        background-color: #25d366;
+        color: #fff;
+        border-radius: 50px;
+        text-align: center;
+        font-size: 40px; /* Increased font size */
+        box-shadow: 2px 2px 3px #999;
+        z-index: 100;
+      }
+      .whatsapp-icon {
+        margin-top: 15px; /* Adjusted margin-top */
+      }
+      
+      /* for mobile */
+      @media screen and (max-width: 767px) {
+        .whatsapp-icon {
+          margin-top: 5px; /* Adjusted margin-top for mobile */
+        }
+        .whatsapp_float {
+          width: 50px; /* Adjusted width for mobile */
+          height: 50px; /* Adjusted height for mobile */
+          bottom: 30px;
+          right: 10px;
+          font-size: 30px; /* Adjusted font size for mobile */
+        }
+      }
+      

@@ -1,0 +1,98 @@
+{% extends "main.html" %}
+{% load static %}
+
+{% block content %}
+<style>
+    @keyframes fadeInRight {
+        from {
+            opacity: 0;
+            transform: translateX(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+    @keyframes fadeInLeft {
+        from {
+            opacity: 0;
+            transform: translateX(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+    .animate-fade-in-right {
+        animation: fadeInRight 1s ease-out;
+    }
+    .animate-fade-in-left {
+        animation: fadeInLeft 1s ease-out;
+    }
+</style>
+
+<section id="about" class="about">
+  <div class="container">
+    <div class="row gx-0 mb-5">
+      <div class="col-lg-6 d-flex flex-column justify-content-center">
+        <div class="content">
+          <h3>Who We Are</h3>
+          <h2>A Passion for Performance, Built on Trust.</h2>
+          <p>
+            Our story began in 2009, driven by a deep appreciation for the
+            engineering excellence of Mercedes-Benz. Starting as a dedicated
+            Mercedes parts dealer, we've grown through unwavering dedication
+            to quality and exceptional service. Today, we're proud to be
+            Nigeria's leading trusted retailer for genuine Mercedes parts.
+            When it comes to keeping your Mercedes performing at its peak,
+            we're the partner you can rely on.
+          </p>
+        </div>
+      </div>
+      <div class="col-lg-6 d-flex align-items-center">
+        <img src="{% static 'assets/img/cod.jpg' %}" class="img-fluid animate-fade-in-right" alt="Our team at work"/>
+      </div>
+    </div>
+
+    <div class="row gx-0 mb-5">
+      <div class="col-lg-6 d-flex align-items-center">
+        <img src="{% static 'assets/img/abouta.png' %}" class="img-fluid animate-fade-in-left" alt="Mercedes parts showcase"/>
+      </div>
+      <div class="col-lg-6 d-flex flex-column justify-content-center">
+        <div class="content">
+          <h3>Our Commitment</h3>
+          <h2>Quality Parts, Expert Knowledge</h2>
+          <p>
+            At our core, we believe in providing only the highest quality Mercedes parts. 
+            Our team of experts meticulously sources and verifies each component to ensure 
+            it meets the exacting standards that Mercedes-Benz is known for. We understand 
+            that your vehicle deserves nothing but the best, and we're committed to delivering 
+            just that.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="row gx-0">
+      <div class="col-lg-12 text-center">
+        <h2>Why Choose Us</h2>
+        <ul class="list-unstyled">
+          <li><strong>Expertise:</strong> With over a decade of experience specializing in Mercedes-Benz vehicles.</li>
+          <li><strong>Quality:</strong> Offering genuine OEM parts and top-tier aftermarket alternatives.</li>
+          <li><strong>Service:</strong> Unmatched customer support, providing expert advice and assistance.</li>
+          <li><strong>Reliability:</strong> Built on a foundation of trust and consistency.</li>
+        </ul>
+        <p class="mt-4">
+          From classic models to the latest releases, we possess the parts and  <br>  knowledge to optimize 
+          your Mercedes-Benz's performance.  <br>  Our commitment extends beyond mere product sales; 
+          we're dedicated  <br>  to supporting you throughout your Mercedes ownership experience.
+        </p>
+        <div class="text-center mt-4">
+          <a href="#" class="btn btn-primary">Contact Us Today</a>
+        </div>
+      </div>
+    </div>
+    
+  </div>
+</section>
+{% endblock %}

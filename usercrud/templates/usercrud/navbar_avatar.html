@@ -1,0 +1,25 @@
+{% extends "main.html" %}
+
+
+{% block content %}
+<li class="nav-item">
+    <div class="row align-items-center no-gutters">
+      <div class="col-auto pr-2">
+        <a href="#" class="nav-link p-0">
+          <img src="https://static.vecteezy.com/system/resources/thumbnails/001/840/618/small/picture-profile-icon-male-icon-human-or-people-sign-and-symbol-free-vector.jpg" class="rounded-circle" style="width: 40px;" alt="Avatar" />
+        </a>
+      </div>
+      <div class="col">
+  
+        {% if request.user.is_authenticated %}
+        <span> <a href="{% url 'logout' %}"> Logout</a></span>
+      
+        {% else %}
+        <span> <a href="{% url 'login' %}"> Register/Login</a></span>
+        {% endif %}
+    
+      </div>
+    </div>
+  </li>
+
+  {% endblock %}

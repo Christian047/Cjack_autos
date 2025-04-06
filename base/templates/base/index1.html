@@ -1,0 +1,998 @@
+{% extends 'main.html' %} {% load static %} {% block content %}
+{% load humanize %}
+
+<body>
+
+
+  <!-- ======= Hero Section ======= -->
+  <section id="hero" class="hero d-flex align-items-center">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-6 d-flex flex-column justify-content-center">
+          <h1 data-aos="fade-up">
+            Your Trusted Source for Premium Mercedes Parts
+          </h1>
+          <h2 data-aos="fade-up" data-aos-delay="400">
+            Quality, Performance, Assurance.
+          </h2>
+          <div data-aos="fade-up" data-aos-delay="600">
+
+
+
+            <div class=" searchbar">
+              <form action="" method="post">
+                {% comment %} <input type="text" name="product" id="product"> {% endcomment %}
+
+                <input type="email" placeholder="Enter keyword like 'Mercedes' or 'Grille'" name="product"
+                  id="product" autocomplete="off"
+                  style="::placeholder {font-size: 12px; color: #991e1e; font-weight: 300;}" />
+
+                <input type="submit" value="Search" />
+              </form>
+
+            </div>
+
+
+            <div class="text-center text-lg-start">
+              <a href="{% url "products" %}" class=" btn-get-started scrollto d-inline-flex align-items-center justify-content-center
+                align-self-center">
+                <span>Browse Products</span>
+                <i class="bi bi-arrow-right"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-6 hero-img px-4 text-center" data-aos="zoom-out" data-aos-delay="200">
+          <img src="{% static 'assets/img/Merc1.png' %}" class="img-fluid mx-4" alt="" style="width: 350px" />
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- End Hero -->
+
+
+
+
+
+
+  <main id="main">
+    <!-- ======= About Section ======= -->
+    <section id="about" class="about">
+      <div class="container" data-aos="fade-up">
+        <div class="row gx-0">
+          <div class="col-lg-6 d-flex flex-column justify-content-center" data-aos="fade-up" data-aos-delay="200">
+            <div class="content">
+              <h3>Who We Are</h3>
+              <h2>A Passion for Performance, Built on Trust.</h2>
+              <p>
+                Our story began in 2009, driven by a deep appreciation for the
+                engineering excellence of Mercedes-Benz. Starting as a dedicated
+                Mercedes parts dealer, we've grown through unwavering dedication
+                to quality and exceptional service. Today, we're proud to be
+                Nigeria's leading trusted retailer for genuine Mercedes parts.
+                When it comes to keeping your Mercedes performing at its peak,
+                we're the partner you can rely on.
+              </p>
+              <div class="text-center text-lg-start">
+                <a href="{% url "about" %}"
+                  class="btn-read-more d-inline-flex align-items-center justify-content-center align-self-center">
+                  <span>Read More</span>
+                  <i class="bi bi-arrow-right"></i>
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-lg-6 d-flex align-items-center" data-aos="zoom-out" data-aos-delay="200">
+            <img src="{% static 'assets/img/cod.jpg' %}" class="img-fluid" alt="" />
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- End About Section -->
+
+    {% comment %} {% include "base/blog.html" %} {% endcomment %}
+
+
+
+
+
+    
+
+    <!-- Carousel -->
+    <section>
+
+      <header class="section-header">
+        <h2>Blog</h2>
+        <p>Browse the right parts for your Vehicle</p>
+      </header>
+
+      <div id="carousel" class="carousel slide" data-bs-ride="false" style="max-width: 500px; margin: 0 auto;">
+        <div class="carousel-indicators"
+          style="position: absolute; bottom: -40px; left: 50%; transform: translateX(-50%); margin: 0; display: flex; justify-content: center; align-items: center;">
+          {% for car in cars %}
+          <button type="button" data-bs-target="#carousel" data-bs-slide-to="{{ forloop.counter0 }}" {% if forloop.first %} class="active" aria-current="true" {% endif %} aria-label="Slide {{ forloop.counter }}"
+            style="width: 10px; height: 10px; border-radius: 50%; background-color: black; margin: 0 5px;"></button>
+          {% endfor %}
+        </div>
+
+        <div class="carousel-inner">
+          {% for car in cars %}
+          <div class="carousel-item {% if forloop.first %}active{% endif %}">
+            <div class="position-relative">
+              <img src="{{ car.picture.url }}" class="d-block w-100" alt="{{ car.name }}">
+              <div class="d-flex flex-column align-items-center w-100"
+                style="margin-top: 10px; margin-bottom: 20px; position: relative; z-index: 5;">
+                <h2 class="mb-2 fw-bold my-header">{{ car.name }}</h2>
+
+
+                <button class="car-button">
+                  <a href="{% url 'car_model' car.pk %}" style=" font-weight: bold; color:white;">Browse Parts</a>
+                </button>
+
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+
+        <button class="carousel-control-prev" type="button" data-bs-target="#carousel" data-bs-slide="prev"
+          style="z-index: 2;">
+          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#carousel" data-bs-slide="next"
+          style="z-index: 2;">
+          <span class="carousel-control-next-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Next</span>
+        </button>
+      </div>
+    </section>
+
+
+    <section>
+      <div class=" entries">
+        <section id="portfolio" class="portfolio">
+          <div class="container" data-aos="fade-up">
+            <header class="section-header">
+              <h2>Portfolio</h2>
+              <p>Catalogue</p>
+
+
+            </header>
+
+            <!-- Category filter buttons -->
+            <div class="row" data-aos="fade-up" data-aos-delay="100">
+              <div class="col-lg-12 d-flex justify-content-center">
+                <ul id="portfolio-flters">
+                  <li data-filter="*" class="filter-active">All</li>
+                  {% for cat in cats %}
+                  <li data-filter=".filter-{{cat.name|slugify}}"> {{cat}} </li>
+                  {% endfor %}
+                </ul>
+              </div>
+            </div>
+
+  <!-- Products container -->
+  <div class="row gy-4 portfolio-container" data-aos="fade-up" data-aos-delay="200">
+    {% regroup products by cat as categorized_products %}
+  
+    {% for category in categorized_products %}
+    {% with category_products=category.list|slice:":6" %}
+    {% for product in category_products %}
+    <!-- Improved Dynamic Product Card -->
+    <div class="col-sm-4 col-md-4 col-lg-4 mb-4 portfolio-item filter-{{product.cat|slugify}}">
+      <div class="p-display">
+        <!-- Trending Badge -->
+        {% comment %} {% if product.is_trending %} {% endcomment %}
+        <div class="trending-badge">
+          <div class="trending-label">
+            <span>Trending</span>
+          </div>
+        </div>
+        {% comment %} {% endif %} {% endcomment %}
+  
+        <!-- Discount Badge -->
+        {% if product.discount_percentage > 0 %}
+        <div class="discount-badge">-{{product.discount_percentage}}%</div>
+        {% endif %}
+  
+        <!-- Image section -->
+        <div class="product-image-container">
+          <img src="{{ product.picture.url }}" class="product-img" alt="{{ product.name }}">
+  
+          <!-- Action Buttons -->
+          <button class="wishlist-btn {% if product.id in wishlist_product_ids %}active{% endif %}"
+            data-product="{{ product.id }}">
+            <i
+              class="bi {% if product.id in wishlist_product_ids %}bi-heart-fill text-primary{% else %}bi-heart{% endif %}"></i>
+          </button>
+  
+          <button class="quick-view-btn" data-bs-toggle="modal" data-bs-target="#quickViewModal{{ product.id }}">
+            <a href="{% url 'single_product' product.pk %}"><i class="bi bi-eye"></i></a>
+          </button>
+  
+          <!-- Stock Status -->
+          {% if product.stock_quantity <= 0 %} <div class="out-of-stock-label">Out of Stock
+        </div>
+    
+        {% comment %} <div class="low-stock-label">Only {{ product.stock_quantity }} items left</div> {% endcomment %}
+        {% endif %}
+      </div>
+  
+      <!-- Product info -->
+      <div class="card-body">
+        <div class="row">
+          <div class="col-6">
+            <h5 class="product-title"><a href="{% url 'single_product' product.pk %}">{{product.name}}</a></h5>
+            <p class="product-category text-muted">{{product.cat}}</p>
+  
+            <!-- Product Rating -->
+            <div class="product-rating">
+              {% for i in '12345'|make_list %}
+              {% if forloop.counter <= product.rating_value %} <i class="bi bi-star-fill text-warning"></i>
+                {% else %}
+                <i class="bi bi-star text-warning"></i>
+                {% endif %}
+                {% endfor %}
+                <span class="rating-count">({{ product.rating_count }})</span>
+            </div>
+          </div>
+          <div class="col-6 price-section">
+            <!-- Price with Original Price if Discounted -->
+            {% load humanize %}
+  
+            {% if product.original_price %}
+            <h4 class="current-price">₦{{product.price|intcomma}}</h4>
+            <small class="original-price">₦{{ product.original_price|intcomma }}</small>
+            {% else %}
+            <h4 class="current-price">₦{{product.price|intcomma}}</h4>
+            {% endif %}
+            <div class="model-info"><a href="{% url 'car_model' product.pk %}">{{product.car_model}}</a></div>
+          </div>
+        </div>
+      </div>
+  
+      <!-- Card Footer -->
+      <div class="card-footer">
+        <a href="{% url 'single_product' product.pk %}" class="readmore">
+          <span>Read More</span>
+          <i class="bi bi-arrow-right"></i>
+        </a>
+        <button class="btn btn-primary gradient-btn update-cart" data-product="{{product.id}}" data-action="add">
+          <i class="bi bi-cart-plus"></i> Add to Cart
+        </button>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+  {% endwith %}
+  {% endfor %}
+  </div>
+  
+  <!-- CSS for the improved card design -->
+  <style>
+    /* Minor UX Improvements */
+    .p-display {
+      border-radius: 10px;
+      box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+      overflow: hidden;
+      transition: all 0.3s ease;
+      margin-bottom: 15px;
+      position: relative;
+    }
+  
+    .p-display:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+    }
+  
+    /* Image container */
+    .product-image-container {
+      position: relative;
+      height: 220px;
+      background-color: #ffffff;
+      overflow: hidden;
+    }
+  
+    .product-img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      transition: transform 0.5s ease;
+      padding: 10px;
+    }
+  
+    .p-display:hover .product-img {
+      transform: scale(1.05);
+    }
+  
+    /* Stock labels */
+    .low-stock-label,
+    .out-of-stock-label {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 6px 8px;
+      color: white;
+      font-size: 12px;
+      text-align: center;
+      font-weight: 600;
+    }
+  
+    .out-of-stock-label {
+      background-color: rgba(231, 76, 60, 0.85);
+    }
+  
+    .low-stock-label {
+      background-color: rgba(243, 156, 18, 0.85);
+    }
+  
+    /* Badges */
+    .trending-badge {
+      position: absolute;
+      top: 0;
+      left: -5px;
+      z-index: 2;
+    }
+  
+    .trending-label {
+      background: linear-gradient(45deg, #ff6b6b, #ff9f43);
+      color: white;
+      font-weight: bold;
+      font-size: 13px;
+      padding: 5px 15px;
+      border-radius: 0 0 20px 0;
+      position: relative;
+    }
+  
+    .trending-label:before {
+      content: '';
+      position: absolute;
+      left: 0;
+      bottom: -5px;
+      border-top: 5px solid #e05252;
+      border-left: 5px solid transparent;
+      filter: brightness(0.8);
+    }
+  
+    .discount-badge {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background-color: #e74c3c;
+      color: white;
+      border-radius: 50%;
+      width: 45px;
+      height: 45px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      z-index: 2;
+    }
+  
+    /* Action buttons */
+    .wishlist-btn,
+    .quick-view-btn {
+      position: absolute;
+      background: white;
+      border-radius: 50%;
+      width: 35px;
+      height: 35px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      opacity: 0;
+      transition: all 0.3s ease;
+      border: none;
+    }
+  
+    .wishlist-btn {
+      top: 10px;
+      right: 10px;
+      z-index: 2;
+    }
+  
+    .quick-view-btn {
+      top: 10px;
+      right: 55px;
+      z-index: 2;
+    }
+  
+    .p-display:hover .wishlist-btn,
+    .p-display:hover .quick-view-btn {
+      opacity: 1;
+    }
+  
+    .wishlist-btn.active {
+      opacity: 1;
+    }
+  
+    /* Card body */
+    .card-body {
+      padding: 12px 15px;
+    }
+  
+    /* Product info */
+    .product-title {
+      font-weight: 600;
+      margin-bottom: 2px;
+      font-size: 16px;
+    }
+  
+    .product-title a {
+      color: #333;
+      text-decoration: none;
+    
+    }
+  
+    .product-title a:hover {
+      color: #3498db;
+    }
+  
+    .product-category {
+      font-size: 13px;
+      color: #777;
+      margin-bottom: 4px;
+    }
+  
+    /* Rating */
+    .product-rating {
+      margin-top: 4px;
+    }
+  
+    .rating-count {
+      font-size: 0.8rem;
+      color: #777;
+      margin-left: 5px;
+    }
+  
+    /* Price section */
+    .price-section {
+      text-align: right;
+    }
+  
+    .current-price {
+      font-family: poppins, sans-serif;
+      font-weight: bold;
+      font-size: 18px;
+      margin-bottom: 0;
+    }
+  
+    .original-price {
+      text-decoration: line-through;
+      color: #888;
+      font-size: 14px;
+    }
+  
+    .model-info {
+      color: #777;
+      font-size: 12px;
+      margin-top: 3px;
+    }
+  
+    /* Card footer */
+    .card-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 15px;
+      background-color: #f8f9fa;
+      border-top: 1px solid rgba(0, 0, 0, 0.05);
+    }
+  
+    /* Read more link */
+    .readmore {
+      color: #555;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+    }
+  
+    .readmore i {
+      margin-left: 5px;
+      transition: transform 0.2s;
+    }
+  
+    .readmore:hover i {
+      transform: translateX(3px);
+    }
+  
+    /* Add to cart button */
+    .gradient-btn {
+      background: linear-gradient(45deg, #3498db, #2980b9);
+      border: none;
+      transition: all 0.3s ease;
+      padding: 6px 12px;
+      font-size: 14px;
+    }
+  
+    .gradient-btn:hover {
+      background: linear-gradient(45deg, #2980b9, #3498db);
+      transform: translateY(-2px);
+    }
+  </style>
+
+
+  
+
+
+
+
+        </section>
+      </div>
+    </section>
+
+
+
+    {% comment %}
+    <div class="col-sm-4 col-md-4 col-lg-4 mb-4 portfolio-item filter-card">
+      <div class="card">
+
+        <div style="height: 200px; overflow: hidden;">
+          <img src="{% static 'assets/img/portfolio/a1.jpeg' %}" class="card-img-top" alt="App 1">
+        </div>
+        <div class="card-body">
+          <h4 class="sidebar-title"><a href="portfolio-details.html">More Details</a></h4>
+          <p class="card-text">App</p>
+        </div>
+      </div>
+    </div> {% endcomment %}
+
+
+
+
+
+    <!-- ======= Counts Section ======= -->
+    <section id="counts" class="counts">
+      <div class="container" data-aos="fade-up">
+        <div class="row gy-4">
+          <div class="col-lg-3 col-md-6">
+            <div class="count-box">
+              <i class="bi bi-emoji-smile"></i>
+              <div>
+                <span data-purecounter-start="0" data-purecounter-end="1208" data-purecounter-duration="1"
+                  class="purecounter"></span>
+                <p>Items in Stock</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-lg-3 col-md-6">
+            <div class="count-box">
+              <i class="bi bi-journal-richtext" style="color: #ee6c20"></i>
+              <div>
+                <span data-purecounter-start="0" data-purecounter-end="15" data-purecounter-duration="1"
+                  class="purecounter"></span>
+                <p>Mercedes Classes</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-lg-3 col-md-6">
+            <div class="count-box">
+              <i class="bi bi-headset" style="color: #15be56"></i>
+              <div>
+                <span data-purecounter-start="0" data-purecounter-end="4" data-purecounter-duration="1"
+                  class="purecounter"></span>
+                <p>Branches</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-lg-3 col-md-6">
+            <div class="count-box">
+              <i class="bi bi-people" style="color: #bb0852"></i>
+              <div>
+                <span data-purecounter-start="0" data-purecounter-end="35" data-purecounter-duration="1"
+                  class="purecounter"></span>
+                <p>Hard Workers</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- End Counts Section -->
+
+<!-- ======= How to Buy Section ======= -->
+<section id="values" class="values">
+  <div class="container" data-aos="fade-up">
+    <header class="section-header">
+      <h2>How to Buy</h2>
+      <p>Follow these simple steps</p>
+    </header>
+
+    <div class="row">
+      <div class="col-lg-4" data-aos="fade-up" data-aos-delay="200">
+        <div class="box">
+          <img src="{% static 'assets/img/values-1.png' %}" class="img-fluid" alt="" />
+          <h3>Step 1: Find the Right Product</h3>
+          <p>
+            Browse our store and select the perfect part that fits your Mercedes model.
+          </p>
+        </div>
+      </div>
+
+      <div class="col-lg-4 mt-4 mt-lg-0" data-aos="fade-up" data-aos-delay="400">
+        <div class="box">
+          <img src="{% static 'assets/img/values-2.png' %}" class="img-fluid" alt="" />
+          <h3>Step 2: Place Your Order</h3>
+          <p>
+            Add the item to your cart and contact our 24/7 online customer support for assistance.
+          </p>
+        </div>
+      </div>
+
+      <div class="col-lg-4 mt-4 mt-lg-0" data-aos="fade-up" data-aos-delay="600">
+        <div class="box">
+          <img src="{% static 'assets/img/values-3.png' %}" class="img-fluid" alt="" />
+          <h3>Step 3: Fast Delivery</h3>
+          <p>
+            Get your order delivered to your doorstep in record time, hassle-free.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- End How to Buy Section -->
+
+
+
+    <!-- ======= F.A.Q Section ======= -->
+    <section id="faq" class="faq">
+      <div class="container" data-aos="fade-up">
+        <header class="section-header">
+          <h2>F.A.Q</h2>
+          <p>Frequently Asked Questions</p>
+        </header>
+
+        <div class="row">
+          <div class="col-lg-6">
+            <!-- F.A.Q List 1-->
+            <div class="accordion accordion-flush" id="faqlist1">
+              <div class="accordion-item">
+                <h2 class="accordion-header">
+                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#faq-content-1">
+                    Are your parts OEM or aftermarket?
+                  </button>
+                </h2>
+                <div id="faq-content-1" class="accordion-collapse collapse" data-bs-parent="#faqlist1">
+                  <div class="accordion-body">
+                    We offer both genuine OEM Mercedes parts and quality aftermarket alternatives. OEM parts are
+                    directly from Mercedes-Benz, while our aftermarket options are carefully selected for reliability
+                    and fit.
+                  </div>
+                </div>
+              </div>
+
+              <div class="accordion-item">
+                <h2 class="accordion-header">
+                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#faq-content-2">
+                    How do I find the right part for my Mercedes?
+                  </button>
+                </h2>
+                <div id="faq-content-2" class="accordion-collapse collapse" data-bs-parent="#faqlist1">
+                  <div class="accordion-body">
+                    Use our online lookup tool with your vehicle's year, model, and VIN. If you're unsure, our
+                    experienced team can help you find the exact part you need - just give us a call or email.
+                  </div>
+                </div>
+              </div>
+
+              <div class="accordion-item">
+                <h2 class="accordion-header">
+                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#faq-content-3">
+                    Do you offer warranties?
+                  </button>
+                </h2>
+                <div id="faq-content-3" class="accordion-collapse collapse" data-bs-parent="#faqlist1">
+                  <div class="accordion-body">
+                    Yes. OEM parts come with the Mercedes-Benz manufacturer warranty. Our aftermarket parts typically
+                    have a 12-month or 12,000-mile warranty, whichever comes first. Check the product page for specific
+                    warranty details.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-lg-6">
+            <!-- F.A.Q List 2-->
+            <div class="accordion accordion-flush" id="faqlist2">
+              <div class="accordion-item">
+                <h2 class="accordion-header">
+                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#faq2-content-1">
+                    What's your return policy?
+                  </button>
+                </h2>
+                <div id="faq2-content-1" class="accordion-collapse collapse" data-bs-parent="#faqlist2">
+                  <div class="accordion-body">
+                    We offer 30-day returns for most unused, unopened parts in original packaging. Special orders may
+                    have different terms. Contact us for return instructions and information on any restocking fees.
+                  </div>
+                </div>
+              </div>
+
+              <div class="accordion-item">
+                <h2 class="accordion-header">
+                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#faq2-content-2">
+                    Do you ship internationally?
+                  </button>
+                </h2>
+                <div id="faq2-content-2" class="accordion-collapse collapse" data-bs-parent="#faqlist2">
+                  <div class="accordion-body">
+                    Yes, we ship to many countries worldwide. Shipping costs vary based on location and package size.
+                    Please note that import duties or taxes may apply and are the buyer's responsibility.
+                  </div>
+                </div>
+              </div>
+
+              <div class="accordion-item">
+                <h2 class="accordion-header">
+                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#faq2-content-3">
+                    Do you offer installation services for the parts you sell?
+
+                  </button>
+                </h2>
+                <div id="faq2-content-3" class="accordion-collapse collapse" data-bs-parent="#faqlist2">
+                  <div class="accordion-body">
+                    While we don't provide installation services directly, we can recommend certified Mercedes-Benz
+                    mechanics in your area. We also offer detailed installation guides for many parts to assist DIY
+                    enthusiasts. If you need technical advice, our support team is always ready to help.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- End F.A.Q Section -->
+
+
+
+    {% comment %} <!-- ======= Clients Section ======= -->
+    <section id="clients" class="clients">
+      <div class="container" data-aos="fade-up">
+        <header class="section-header">
+          <h2>Our Clients</h2>
+          <p>Temporibus omnis officia</p>
+        </header>
+
+        <div class="clients-slider swiper">
+          <div class="swiper-wrapper align-items-center">
+            <div class="swiper-slide">
+              <img src="{% static 'assets/img/clients/client-1.png' %}" class="img-fluid" alt="" />
+            </div>
+            <div class="swiper-slide">
+              <img src="{% static 'assets/img/clients/client-2.png' %}" class="img-fluid" alt="" />
+            </div>
+            <div class="swiper-slide">
+              <img src="{% static 'assets/img/clients/client-3.png' %}" class="img-fluid" alt="" />
+            </div>
+            <div class="swiper-slide">
+              <img src="{% static 'assets/img/clients/client-4.png' %}" class="img-fluid" alt="" />
+            </div>
+            <div class="swiper-slide">
+              <img src="{% static 'assets/img/clients/client-5.png' %}" class="img-fluid" alt="" />
+            </div>
+            <div class="swiper-slide">
+              <img src="{% static 'assets/img/clients/client-6.png' %}" class="img-fluid" alt="" />
+            </div>
+            <div class="swiper-slide">
+              <img src="{% static 'assets/img/clients/client-7.png' %}" class="img-fluid" alt="" />
+            </div>
+            <div class="swiper-slide">
+              <img src="{% static 'assets/img/clients/client-8.png' %}" class="img-fluid" alt="" />
+            </div>
+          </div>
+          <div class="swiper-pagination"></div>
+        </div>
+      </div>
+    </section>
+    <!-- End Clients Section -->
+
+    {% endcomment %}
+
+    <!-- ======= Team Section ======= -->
+    <section id="team" class="team">
+      <div class="container" data-aos="fade-up">
+        <header class="section-header">
+          <h2>Team</h2>
+          <p>Our hard working team</p>
+        </header>
+
+        <div class="row gy-4">
+          <div class="col-lg-3 col-md-6 d-flex align-items-stretch" data-aos="fade-up" data-aos-delay="100">
+            <div class="member">
+              <div class="member-img">
+                <img src="{% static 'assets/img/team/black1.png' %}" class="img-fluid" alt="" />
+                <div class="social">
+                  <a href=""><i class="bi bi-twitter"></i></a>
+                  <a href=""><i class="bi bi-facebook"></i></a>
+                  <a href=""><i class="bi bi-instagram"></i></a>
+                  <a href=""><i class="bi bi-linkedin"></i></a>
+                </div>
+              </div>
+              <div class="member-info">
+                <h4>Olamide Adebayo (Snr)</h4>
+                <span>Chief Executive Officer</span>
+                <p>
+                  Cybernetic Augmentation Engineering,
+                  New Shanghai Institute of Bionics,China
+                <p> (2009-2018)</p>
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-lg-3 col-md-6 d-flex align-items-stretch" data-aos="fade-up" data-aos-delay="200">
+            <div class="member">
+              <div class="member-img">
+                <img src="{% static 'assets/img/team/black2.png' %}" class="img-fluid" alt="" />
+                <div class="social">
+                  <a href=""><i class="bi bi-twitter"></i></a>
+                  <a href=""><i class="bi bi-facebook"></i></a>
+                  <a href=""><i class="bi bi-instagram"></i></a>
+                  <a href=""><i class="bi bi-linkedin"></i></a>
+                </div>
+              </div>
+              <div class="member-info">
+                <h4>Emeka Nwachukwu</h4>
+                <span>Product Manager</span>
+                <p>
+                  Aetheric Engine Design, Institute of Celestial Mechanics, Calabar. (2000-2010)
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-lg-3 col-md-6 d-flex align-items-stretch" data-aos="fade-up" data-aos-delay="300">
+            <div class="member">
+              <div class="member-img">
+                <img src="{% static 'assets/img/team/Black3.png' %}" class="img-fluid" alt="" />
+                <div class="social">
+                  <a href=""><i class="bi bi-twitter"></i></a>
+                  <a href=""><i class="bi bi-facebook"></i></a>
+                  <a href=""><i class="bi bi-instagram"></i></a>
+                  <a href=""><i class="bi bi-linkedin"></i></a>
+                </div>
+              </div>
+              <div class="member-info">
+                <h4>Chukwudi Ajaero</h4>
+                <span>CTO</span>
+                <p>
+                  Biomechanical Engineering,
+                  Atlantis Institute of Marine Technology, Las Vegas
+                <p> (2008-2013)</p>
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-lg-3 col-md-6 d-flex align-items-stretch" data-aos="fade-up" data-aos-delay="400">
+            <div class="member">
+              <div class="member-img">
+                <img src="{% static 'assets/img/team/Black4.png' %}" class="img-fluid" alt="" />
+                <div class="social">
+                  <a href=""><i class="bi bi-twitter"></i></a>
+                  <a href=""><i class="bi bi-facebook"></i></a>
+                  <a href=""><i class="bi bi-instagram"></i></a>
+                  <a href=""><i class="bi bi-linkedin"></i></a>
+                </div>
+              </div>
+              <div class="member-info">
+                <h4>Chinedu Onyeka</h4>
+                <span>Accountant</span>
+                <p>
+                  Advanced Propulsion Systems,
+                  Nova Orion Institute,Ontario Canada
+                <p> (2005-2015)</p>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- End Team Section -->
+
+
+
+
+    <!-- ======= Contact Section ======= -->
+    <section id="contact" class="contact">
+      <div class="container" data-aos="fade-up">
+        <header class="section-header">
+          <h2>Contact</h2>
+          <p>Contact Us</p>
+        </header>
+
+        <div class="row gy-4">
+          <div class="col-lg-6">
+            <div class="row gy-4">
+              <div class="col-md-6">
+                <div class="info-box">
+                  <i class="bi bi-geo-alt"></i>
+                  <h3>Address</h3>
+                  <p>No 53 Ojekunle Street,<br />Papa Ajao,Mushin Lagos</p>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="info-box">
+                  <i class="bi bi-telephone"></i>
+                  <h3>Call Us</h3>
+                  <p>+234 8058 588 55<br />+234 8028 255 41</p>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="info-box">
+                  <i class="bi bi-envelope"></i>
+                  <h3>Email Us</h3>
+                  <p>Cjackautos@gmail.com<br />contact.Cjackautos@info.com</p>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="info-box">
+                  <i class="bi bi-clock"></i>
+                  <h3>Open Hours</h3>
+                  <p>Monday - Friday<br />9:00AM - 05:00PM</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-lg-6">
+            <form action="forms/contact.php" method="post" class="php-email-form">
+              <div class="row gy-4">
+                <div class="col-md-6">
+                  <input type="text" name="name" class="form-control" placeholder="Your Name" required />
+                </div>
+
+                <div class="col-md-6">
+                  <input type="email" class="form-control" name="email" placeholder="Your Email" required />
+                </div>
+
+                <div class="col-md-12">
+                  <input type="text" class="form-control" name="subject" placeholder="Subject" required />
+                </div>
+
+                <div class="col-md-12">
+                  <textarea class="form-control" name="message" rows="6" placeholder="Message" required></textarea>
+                </div>
+
+                <div class="col-md-12 text-center">
+                  <div class="loading">Loading</div>
+                  <div class="error-message"></div>
+                  <div class="sent-message">
+                    Your message has been sent. Thank you!
+                  </div>
+
+                  <button type="submit">Send Message</button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- End Contact Section -->
+  </main>
+  <!-- End #main -->
+
+  <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i
+      class="bi bi-arrow-up-short"></i></a>
+</body>
+
+{% endblock %}

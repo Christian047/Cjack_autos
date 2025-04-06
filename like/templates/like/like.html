@@ -1,0 +1,54 @@
+{% comment %} <div class="col"><i class="bi bi-hand-thumbs-up-fill"></i> <small>45 people found this helpful</small></div> {% endcomment %}
+
+<div class="row">
+  <div class="col">
+      <button class="btn btn-sm btn-primary like-button {% if request.user in review.like_set.all %}liked{% endif %}" 
+              id="like-button-{{ review.id }}" 
+              data-review-id="{{ review.id }}">
+          Like
+      </button>
+      <i class="bi bi-hand-thumbs-up-fill"></i> 
+      <span id="like-count-{{ review.id }}">{{ review.like_set.first.like_count }}</span> people found this helpful
+  </div>
+</div>
+
+  
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>$(document).ready(function() {
+  $('.like-button').click(function() {
+      var reviewId = $(this).data('review-id');
+      var csrfToken = $('input[name="csrfmiddlewaretoken"]').val();
+
+      $.ajax({
+          type: 'POST',
+          url: '{% url "like_review" %}',  // Ensure the URL is correct
+          data: {
+              'review_id': reviewId,
+              'csrfmiddlewaretoken': csrfToken
+          },
+          success: function(response) {
+              if (response.error) {
+                  alert(response.error);
+              } else {
+                  $('#like-count-' + reviewId).text(response.like_count);
+                  if (response.liked) {
+                      $('#like-button-' + reviewId).addClass('liked');
+                  } else {
+                      $('#like-button-' + reviewId).removeClass('liked');
+                  }
+              }
+          }
+      });
+  });
+});
+
+</script>
+
+
+<style>
+    .liked {
+      color: blue; /* Change the color to your desired color */
+    }
+  </style>
+  

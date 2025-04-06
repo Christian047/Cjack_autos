@@ -1,0 +1,90 @@
+{% extends 'main.html' %}
+
+{% block title %}Order Data Debug{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-3 px-md-4 py-4">
+    <h1 class="mb-4">Order Data Debug</h1>
+    
+    <div class="alert alert-info">
+        <h5>Basic Stats</h5>
+        <ul>
+            <li>Orders Count: {{ debug_info.order_count }}</li>
+            {% if 'payment_count' in debug_info %}
+                <li>Payments Count: {{ debug_info.payment_count }}</li>
+                <li>Payments Linked to Orders: {{ debug_info.payment_linked_count }}</li>
+            {% else %}
+                <li>Payments: Error accessing Payment model - {{ debug_info.payment_error }}</li>
+            {% endif %}
+        </ul>
+    </div>
+    
+    <h2 class="mb-3">Orders Data</h2>
+    
+    <div class="row row-cols-1 row-cols-md-2 g-4 mb-4">
+        {% for order_data in debug_info.orders_data %}
+            <div class="col">
+                <div class="card h-100 {% if order_data.has_payment %}border-success{% else %}border-warning{% endif %}">
+                    <div class="card-header bg-light d-flex justify-content-between align-items-center py-3">
+                        <h5 class="mb-0">Order #{{ order_data.id }}</h5>
+                        <span class="badge {% if order_data.complete %}bg-success{% else %}bg-info{% endif %}">
+                            {% if order_data.complete %}Completed{% else %}Processing{% endif %}
+                        </span>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Customer:</strong> {{ order_data.customer }}</p>
+                        <p><strong>Date:</strong> {{ order_data.date }}</p>
+                        <p><strong>Transaction ID:</strong> {{ order_data.transaction_id|default:"None" }}</p>
+                        <p><strong>Items:</strong> {{ order_data.items_count }}</p>
+                        <p><strong>Total:</strong> ₦{{ order_data.cart_total }}</p>
+                        
+                        <div class="mt-4">
+                            <h6 class="mb-3">Payment Data:</h6>
+                            {% if order_data.has_payment %}
+                                {% for payment in order_data.payments %}
+                                    <div class="card mb-2">
+                                        <div class="card-body">
+                                            <p><strong>Payment ID:</strong> {{ payment.id }}</p>
+                                            <p><strong>Amount:</strong> ₦{{ payment.amount }}</p>
+                                            <p><strong>Reference:</strong> {{ payment.ref }}</p>
+                                            <p><strong>Email:</strong> {{ payment.email }}</p>
+                                            <p>
+                                                <strong>Status:</strong> 
+                                                <span class="badge {% if payment.verified %}bg-success{% else %}bg-warning text-dark{% endif %}">
+                                                    {% if payment.verified %}Verified{% else %}Unverified{% endif %}
+                                                </span>
+                                            </p>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            {% elif 'payment_error' in order_data %}
+                                <div class="alert alert-danger">
+                                    Error accessing payment: {{ order_data.payment_error }}
+                                </div>
+                            {% else %}
+                                <div class="alert alert-warning">
+                                    No payment records found for this order.
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+    
+    <h2 class="mb-3">SQL Queries Executed</h2>
+    <div class="card">
+        <div class="card-body">
+            <pre class="mb-0"><code>{% for query in debug_info.queries %}{{ query.sql }};<br>{% endfor %}</code></pre>
+        </div>
+    </div>
+    
+    <h2 class="mt-4 mb-3">Raw JSON Data</h2>
+    <div class="card">
+        <div class="card-body">
+            <pre class="mb-0"><code>{{ raw_json }}</code></pre>
+        </div>
+    </div>
+</div>
+{% endblock %}

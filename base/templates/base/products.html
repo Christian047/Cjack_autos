@@ -1,0 +1,293 @@
+{% extends 'main.html' %} {% load static %} {% block content %}
+
+<!-- ======= Breadcrumbs ======= -->
+<section class="breadcrumbs">
+  <div class="container">
+    <ol>
+      <li><a href="index.html">Home</a></li>
+      <li>Products</li>
+    </ol>
+    <h2>Products</h2>
+  </div>
+</section>
+<!-- End Breadcrumbs -->
+
+<!-- Note: Data Filter====> Class -->
+
+<section id="blog" class="blog">
+  <div class="container" data-aos="fade-up">
+    <div class="row">
+      <div class="col-lg-8 entries">
+        <section id="portfolio" class="portfolio">
+          <div class="container" data-aos="fade-up">
+            <header class="section-header">
+              <h2>Portfolio</h2>
+              <p>Catalogue</p>
+            </header>
+
+            <div class="row" data-aos="fade-up" data-aos-delay="100">
+              <div class="col-lg-12 d-flex justify-content-center">
+                <ul id="portfolio-flters">
+                  <li data-filter="*" class="filter-active">All Products</li>
+
+                  <li data-filter=".filter-call">Bumbers</li>
+                  <li data-filter=".filter-call2">Lightning and Lamps</li>
+                  <li data-filter=".filter-call">Grilles</li>
+
+
+                  <li data-filter=".filter-web">Brakes & Pads</li>
+                  <li data-filter=".filter-card1">Mirrors(Side & Front)</li>
+                  <li data-filter=".filter-card">Hoods & Bonnets</li>
+                  {% comment %} <li data-filter=".filter-app">Hoods & Bonnets</li> {% endcomment %}
+
+                </ul>
+              </div>
+            </div>
+
+            <div class="row gy-4 portfolio-container" data-aos="fade-up" data-aos-delay="200">
+
+
+              {% for product in products %}
+              <div class="col-sm-4 col-md-4 col-lg-4 mb-4 portfolio-item filter-call">
+
+                <div class="card">
+
+                  <img src="{{ product.picture.url }}" class="card-img-top" alt="App 1">
+
+
+                  <div class="card-body">
+                    <h4 class="card-title"><a href="{% url 'single_product' product.pk %}">{{product.name}}</a></h4>
+                    <p class="card-text">App</p>
+
+                  </div>
+                </div>
+              </div>
+
+              {% endfor %}
+
+              {% for lightlamp in lightlamp %}
+              <div class="col-sm-4 col-md-4 col-lg-4 mb-4 portfolio-item filter-call2">
+                <div class="card">
+
+
+                  <img src="{{lightlamp.picture.url}}" class="card-img-top" alt="App 1">
+
+                  <div class="card-body">
+                    <div class="row">
+                      <div class="col">
+                        <h4 class="card-title"><a href="{% url 'single_product' lightlamp.pk %}">{{lightlamp.name}}</a></h4>
+                        <p class="card-text">{{lightlamp.cat}}</p>
+                      </div>
+                      <div class="col">
+                   <h4>{{lightlamp.price}}</h4>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+              {% endfor %}
+
+
+
+              {% for brake in brakes %}
+              <div class="col-sm-4 col-md-4 col-lg-4 mb-4 portfolio-item filter-web">
+                <div class="card">
+
+                  <div style="height: 200px; overflow: hidden;">
+                    <img src="{{brake.picture.url}}" class="card-img-top" alt="App 1">
+                  </div>
+                  <div class="card-body">
+                    <h4 class="card-title"><a href="{% url 'single_product' brake.pk %}">More Details</a></h4>
+                    <p class="card-text">{{brake.name}}p</p>
+                  </div>
+                </div>
+              </div>
+              {% endfor %}
+
+
+              {% for mirrors in sidemirrors %}
+
+              <div class="col-sm-4 col-md-4 col-lg-4 mb-4 portfolio-item filter-card1">
+                <div class="card">
+
+                  <div style="height: 200px; overflow: hidden;">
+                    <img src="{{mirrors.picture.url}}" class="card-img-top" alt="App 1">
+                  </div>
+                  <div class="card-body">
+                    <h4 class="card-title"><a href="{% url 'single_product' mirrors.pk %}">{{mirrors.name}}</a></h4>
+                    <p class="card-text">App</p>
+
+                  </div>
+                </div>
+              </div>
+              {% endfor %}
+
+
+              {% for hood in hoods %}
+              <div class="col-sm-4 col-md-4 col-lg-4 mb-4 portfolio-item filter-card">
+                <div class="card">
+
+                  <div style="height: 200px; overflow: hidden;">
+                    <img src="{{hood.picture.url}}" class="card-img-top" alt="App 1">
+                  </div>
+                  <div class="card-body">
+                    <h class="sidebar-title"><a href="{% url 'single_product' hood.pk %}">{{hood.name}}</a></h>
+                    <p class="card-text">App</p>
+                  </div>
+                </div>
+              </div>
+              {% endfor %}
+              {% comment %}
+              <div class="col-sm-4 col-md-4 col-lg-4 mb-4 portfolio-item filter-card">
+                <div class="card">
+
+                  <div style="height: 200px; overflow: hidden;">
+                    <img src="{% static 'assets/img/portfolio/a1.jpeg' %}" class="card-img-top" alt="App 1">
+                  </div>
+                  <div class="card-body">
+                    <h4 class="sidebar-title"><a href="portfolio-details.html">More Details</a></h4>
+                    <p class="card-text">App</p>
+                  </div>
+                </div>
+              </div> {% endcomment %}
+
+
+            </div>
+          </div>
+          <p class="text-center m-2 fw-bold">
+            <a href="{% url 'products' %}">See all Products</a>
+          </p>
+        </section>
+      </div>
+
+
+
+
+
+      <div class="col-lg-4">
+
+        <div class="sidebar">
+
+          <h3 class="sidebar-title">Search</h3>
+          <div class="sidebar-item search-form">
+            <form action="">
+              <input type="text">
+              <button type="submit"><i class="bi bi-search"></i></button>
+            </form>
+          </div><!-- End sidebar search formn-->
+
+          <h3 class="sidebar-title">Categories</h3>
+          <div class="sidebar-item categories">
+
+            <ul class="dropdown-menu">
+              <li>
+                <h6 class="dropdown-header">Dropdown header</h6>
+              </li>
+              <li><a class="dropdown-item" href="#">Action</a></li>
+              <li><a class="dropdown-item" href="#">Another action</a></li>
+            </ul>
+            <ul>
+
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="#">Regular link</a></li>
+                <li><a class="dropdown-item active" href="#" aria-current="true">Active link</a></li>
+                <li><a class="dropdown-item" href="#">Another link</a></li>
+              </ul>
+
+
+
+              <li> <span class="form-check"> <input class="form-check-input" type="checkbox" value=""
+                    id="flexCheckDefault">
+                  <a href="#">Less than N50K <span>(25)</span></a></li> </span>
+
+              <li> <span class="form-check"> <input class="form-check-input" type="checkbox" value=""
+                    id="flexCheckDefault">
+                  <a href="#">Japanese Model <span>(25)</span></a></li> </span>
+
+              <li> <span class="form-check"> <input class="form-check-input" type="checkbox" value=""
+                    id="flexCheckDefault">
+                  <a href="#">Free Installation <span>(25)</span></a></li> </span>
+
+              <li> <span class="form-check"> <input class="form-check-input" type="checkbox" value=""
+                    id="flexCheckDefault">
+                  <a href="#">2015 and above <span>(25)</span></a></li> </span>
+
+
+            </ul>
+            <div class="d-grid gap-2">
+              <button class="btn btn-primary align-self-lg-end" type="button">Search</button>
+            </div>
+
+          </div><!-- End sidebar categories-->
+
+          <h3 class="sidebar-title">News Update</h3>
+          <div class="sidebar-item recent-posts">
+            <div class="post-item clearfix">
+              <img src="{% static 'assets/img/blog/blog-recent-1.jpg' %}" alt="">
+              <h4><a href="blog-single.html">Mercedes Reimagines Aftermarket: Self-Printing Parts Revolutionize Spare
+                  Parts Industry</a></h4>
+              <time datetime="2020-01-01">Jan 1, 2020</time>
+            </div>
+
+            <div class="post-item clearfix">
+              <img src="{% static 'assets/img/blog/blog-recent-2.jpg' %}" alt="">
+              <h4><a href="blog-single.html">Green Shift Heats Up: Recycled Materials Drive Down Mercedes Spare Parts
+                  Costs</a></h4>
+              <time datetime="2020-01-01">Jan 1, 2020</time>
+            </div>
+
+            <div class="post-item clearfix">
+              <img src="{% static 'assets/img/blog/blog-recent-3.jpg' %}" alt="">
+              <h4><a href="blog-single.html">AI Mechanics on the Rise: Mercedes Introduces AI-Powered Diagnostics for
+                  DIY Repairs</a></h4>
+              <time datetime="2020-01-01">Jan 1, 2020</time>
+            </div>
+
+            <div class="post-item clearfix">
+              <img src="{% static 'assets/img/blog/blog-recent-4.jpg' %}" alt="">
+              <h4><a href="blog-single.html">Subscription Revolution: Mercedes Offers All-Inclusive Parts Coverage with
+                  Monthly Fee
+
+                  pen_spark
+                </a></h4>
+              <time datetime="2020-01-01">Jan 1, 2020</time>
+            </div>
+
+            <div class="post-item clearfix">
+              <img src="{% static 'assets/img/blog/blog-recent-5.jpg' %}" alt="">
+              <h4><a href="blog-single.html">Drone Delivery Takes Flight: Mercedes Partners with Drone Company for Rapid
+                  Spare Parts Delivery
+
+                  pen_spark
+                </a></h4>
+              <time datetime="2020-01-01">Jan 1, 2020</time>
+            </div>
+
+          </div><!-- End sidebar recent posts-->
+
+          <h3 class="sidebar-title">Tags</h3>
+          <div class="sidebar-item tags">
+            <ul>
+              <li><a href="#">App</a></li>
+              <li><a href="#">IT</a></li>
+              <li><a href="#">Business</a></li>
+              <li><a href="#">Mac</a></li>
+              <li><a href="#">Design</a></li>
+              <li><a href="#">Office</a></li>
+              <li><a href="#">Creative</a></li>
+              <li><a href="#">Studio</a></li>
+              <li><a href="#">Smart</a></li>
+              <li><a href="#">Tips</a></li>
+              <li><a href="#">Marketing</a></li>
+            </ul>
+          </div><!-- End sidebar tags-->
+
+        </div><!-- End sidebar -->
+
+      </div><!-- End blog sidebar -->
+    </div>
+  </div>
+</section>
+
+{% endblock content %}

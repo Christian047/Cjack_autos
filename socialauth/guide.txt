@@ -1,0 +1,118 @@
+[Step 1] 
+pip install django-allauth
+
+add all auth template proccessor in the settings.py of your project
+[Step 2]
+
+TEMPLATES = [
+    {
+ 
+        'OPTIONS': {
+            'context_processors': [
+       
+   
+                'django.template.context_processors.request',
+            ],
+        },
+    },
+]
+
+
+
+
+Add authentication backends after WSGI application
+[Step 3]
+
+AUTHENTICATION_BACKENDS = [
+
+    'django.contrib.auth.backends.ModelBackend',
+
+    'allauth.account.auth_backends.AuthenticationBackend',
+
+]
+
+
+add in installed apps
+[Step 4]
+
+    'allauth',
+    'allauth.account',
+
+
+add in Middleware
+[Step 5]
+
+"allauth.account.middleware.AccountMiddleware",
+
+
+include in urls.py of the project
+[Step 6]
+path('accounts/', include('allauth.urls')),
+
+
+[Step 7]
+makemigrations and migrate
+
+
+add social providers to installed apps
+[Step 8]
+'allauth.socialaccount.providers.google',
+'allauth.socialaccount.providers.facebook',
+
+[Step 8]
+Go to 
+https://console.developers.google.com/
+for provider configuration
+
+[Step 9]
+At the top of the app create a new project
+
+[Step 10]
+Click on the project to enable it
+
+[Step 11]
+Go to consent screen and fill out the form
+
+[Step 12]
+Choose External type
+
+[Step 12]
+Fill consent form and create a mockup for privacy and service
+
+[Step 12]
+Skip scope section
+
+[Step 12]
+Add test users
+
+
+[Step 12]
+Move to credentials and click on the create credentials dropdown at the top
+
+[Step 12]
+Click on the OauthclientID
+
+[Step 12]
+application type is web application
+
+[Step 12]
+Authorized Javascript origin= home urls
+http://127.0.0.1:8000/
+
+Authorized Redirect Uri= Oauth callback in installation
+
+http://127.0.0.1:8000/accounts/google/login/callback/
+
+
+[Step 13]
+Copy Client id and secret key
+
+[Step 13]
+Go to adminsuperuser
+
+
+
+
+
+
+

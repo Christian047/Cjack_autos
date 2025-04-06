@@ -1,0 +1,34 @@
+<!-- ======= Recent Blog Posts Section ======= -->
+<section id="recent-blog-posts" class="recent-blog-posts">
+    <div class="container" data-aos="fade-up">
+        <header class="section-header">
+            <h2>Blog</h2>
+            <p>Find the right parts for your Vehicle</p>
+        </header>
+
+        <!-- Debugging Output: Check if catalogue is passed correctly -->
+
+        <div class="row">
+            {% for cat in catalogue %}
+            <div class="col-lg-4">
+                <div class="post-box">
+                    <div class="post-img" style="height: 300px; width: auto; overflow: hidden;" >
+                        <img src="{{ cat.picture.url }}" class="img-fluid" alt="{{ cat.name }}" />
+                    </div>
+                    <span class="post-date">{{ cat.date }}</span>
+                    <h3 class="post-title">{{ cat.name }}</h3>
+                    <a href="{{ cat.get_absolute_url }}" class="readmore stretched-link mt-auto">
+                        <span>Read More</span>
+                        <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <header class="section-header mt-5">
+            <h2> <a href=" {% url "products" %} ">See All </a> <i class="bi bi-arrow-right"></i> </h2>
+        </header>
+    </div>
+</section>
+<!-- End Recent Blog Posts Section -->

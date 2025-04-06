@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+{% load static %}
+{% csrf_token %}
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+
+  <title>FlexStart Bootstrap Template - Index</title>
+  <meta content="" name="description" />
+  <meta content="" name="keywords" />
+
+  <!-- Favicons -->
+  <!-- {% static "{% static/{% static/assets/img/favicon.png" %}" %} -->
+  <link href="{% static 'assets/img/favicon.png' %}" rel="icon" />
+  <link href="{% static 'assets/img/apple-touch-icon.png' %}" rel="apple-touch-icon" />
+
+  <!-- Google Fonts -->
+  <link
+    href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i"
+    rel="stylesheet" />
+
+  <!-- Vendor CSS Files -->
+  <link href="{% static 'assets/vendor/aos/aos.css' %}" rel="stylesheet" />
+  <link href="{% static 'assets/vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet" />
+  <link href="{% static 'assets/vendor/bootstrap-icons/bootstrap-icons.css' %}" rel="stylesheet" />
+  <link href="{% static 'assets/vendor/glightbox/css/glightbox.min.css' %}" rel="stylesheet" />
+  <link href="{% static 'assets/vendor/remixicon/remixicon.css' %}" rel="stylesheet" />
+  <link href="{% static 'assets/vendor/swiper/swiper-bundle.min.css' %}" rel="stylesheet" />
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css"
+    integrity="sha512-MV7K8+y+gLIBoVD59lQIYicR65iaqukzvf/nwasF0nqhPay5w/9lJmVM2hMDcnK1OnMGCdVK+iQrJ7lzPJQd1w=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.14.1/themes/base/jquery-ui.css">
+  <!-- Template Main CSS File -->
+  <link href="{% static 'assets/css/style.css' %}" rel="stylesheet" />
+
+
+
+  <script type="text/javascript">
+    var user = '{{request.user}}'
+
+    function getToken(name) {
+      var cookieValue = null;
+      if (document.cookie && document.cookie !== '') {
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+          var cookie = cookies[i].trim();
+          // Does this cookie string begin with the name we want?
+          if (cookie.substring(0, name.length + 1) === (name + '=')) {
+            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+            break;
+          }
+        }
+      }
+      return cookieValue;
+    }
+    var csrftoken = getToken('csrftoken')
+
+    function getCookie(name) {
+      // Split cookie string and get all individual name=value pairs in an array
+      var cookieArr = document.cookie.split(";");
+
+      // Loop through the array elements
+      for (var i = 0; i < cookieArr.length; i++) {
+        var cookiePair = cookieArr[i].split("=");
+
+        /* Removing whitespace at the beginning of the cookie name
+        and compare it with the given string */
+        if (name == cookiePair[0].trim()) {
+          // Decode the cookie value and return
+          return decodeURIComponent(cookiePair[1]);
+        }
+      }
+
+      // Return null if not found
+      return null;
+    }
+    var cart = JSON.parse(getCookie('cart'))
+
+    if (cart == undefined) {
+      cart = {}
+      console.log('Cart Created!', cart)
+      document.cookie = 'cart=' + JSON.stringify(cart) + ";domain=;path=/"
+    }
+    console.log('Cart:', cart)
+
+  </script>
+
+</head>
+
+
+
+<body>
+
+
+  {% if messages %}
+  <div class="messages" style="
+        position: fixed;
+        top: 25%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 1100;
+      ">
+    {% for message in messages %}
+    <div
+      class="alert {% if message.tags == 'error' %}alert-danger{% else %}alert-success{% endif %} alert-dismissible fade show"
+      role="alert">
+      {{ message }}
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endfor %}
+  </div>
+
+
+
+  
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script>
+    // Automatically dismiss alerts after 5 seconds
+    $(document).ready(function () {
+      window.setTimeout(function () {
+        $(".alert")
+          .fadeTo(500, 0)
+          .slideUp(500, function () {
+            $(this).remove();
+          });
+      }, 5000);
+    });
+  </script>
+  {% endif %}
+
+<!-- ======= Header ======= -->
+<header id="header" class="header fixed-top">
+  <div class="container-fluid container-xl d-flex align-items-center justify-content-between">
+    <!-- Logo -->
+    <a href="{% url 'home' %}" class="logo d-flex align-items-center">
+      <img src="{% static 'assets/img/logo.png' %}" alt="" />
+      <span>CJACK AUTOS</span>
+    </a>
+
+    <!-- Right side container for cart and nav toggle -->
+    <div class="d-flex align-items-center">
+   
+<div class="me-3">
+  <a href="{% url 'cart' %}" class="cart-icon-container">
+    <div class="cart-icon-wrapper">
+      <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-cart text-dark"
+        viewBox="0 0 16 16">
+        <path
+          d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 12H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5zM3.102 4l1.313 7h8.17l1.313-7H3.102zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm-7 1a1 1 0 1 1 0 2 1 1 0 0 1 0-2zm7 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2z" />
+      </svg>
+      <span class="cart-badge">
+        {{cartItems}}
+      </span>
+    </div>
+  </a>
+</div>
+
+      <nav id="navbar" class="navbar">
+        <ul>
+          <li><a class="nav-link scrollto active" href="#hero">Home</a></li>
+          <li><a class="nav-link scrollto" href="#about">About</a></li>
+          <li><a class="nav-link scrollto" href="#services">Services</a></li>
+          <li>
+            <a class="nav-link scrollto" href="#portfolio">Catalogue</a>
+          </li>
+          <!-- <li><a class="nav-link scrollto" href="#team">Team</a></li> -->
+          <li><a href="{% url 'wishlist' %}">Wishlist</a></li>
+          <li><a href="{% url 'orders' %}">Admin Dashboard</a></li>
+
+          <li class="dropdown megamenu">
+            <a href="#"><span>Categories</span> <i class="bi bi-chevron-down"></i></a>
+            <ul>
+              <li>
+                <a href="#">Column 1 link 1</a>
+                <a href="#">Column 1 link 2</a>
+                <a href="#">Column 1 link 3</a>
+              </li>
+              <li>
+                <a href="#">Column 2 link 1</a>
+                <a href="#">Column 2 link 2</a>
+                <a href="#">Column 3 link 3</a>
+              </li>
+              <li>
+                <a href="#">Column 3 link 1</a>
+                <a href="#">Column 3 link 2</a>
+                <a href="#">Column 3 link 3</a>
+              </li>
+            </ul>
+          </li>
+
+     
+          <li>
+            <a class="nav-link scrollto" href="{% url 'search' %}"><i class="bi bi-search"></i><span
+                class="search-text">Search</span></a>
+          </li>
+
+          <li>
+            <a class="getstarted scrollto" href="#about">Get Started</a>
+          </li>
+        </ul>
+
+        <!-- Mobile nav toggle button -->
+        <i class="bi bi-list mobile-nav-toggle"></i>
+      </nav>
+    </div>
+  </div>
+</header>
+<!-- End Header -->
+
+  <div class="mt-2"></div>
+  {% block content %}
+
+
+
+  {% endblock content %}
+
+<!-- 
+<a href="https:/wa.me/+2348027989868"  target="_blank" class="whatsapp_float"> 
+<i class="fa-brands fa-whatsapp whatsapp-icon">
+<i class="bi bi-whatsapp"></i>
+</i></a> -->
+
+<div class="row">
+  <a href="https:/wa.me/+2348027989868" target="_blank" class="whatsapp_float"><i
+      class="bi bi-whatsapp whatsapp_float"></i></a>
+  <div class="whatsapp-background getstarted"> Chat with us <a href="https:/wa.me/+2348027989868" target="_blank"
+      class="whatsapp_float"><i class="bi bi-whatsapp whatsapp_float"></i></a></div>
+</div>
+
+  <!-- ======= Footer ======= -->
+  <footer id="footer" class="footer">
+    <div class="footer-newsletter">
+      <div class="container">
+        <div class="row justify-content-center">
+          <div class="col-lg-12 text-center">
+            <h4>Our Newsletter</h4>
+            <p>
+              Welcome to our latest newsletter! We're excited to share updates and news with you.
+            </p>
+          </div>
+
+          <div class="col-lg-6">
+            <form action="" method="post">
+              <input type="email" name="email" /><input type="submit" value="Subscribe" />
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-top">
+      <div class="container">
+        <div class="row gy-4">
+          <div class="col-lg-5 col-md-12 footer-info">
+            <a href="index.html" class="logo d-flex align-items-center">
+              <img src="{% static 'assets/img/logo.png' %}" alt="" />
+              <span>CJACK AUTOS</span>
+            </a>
+            <p>
+              Premium Mercedes parts, unbeatable service. Your one-stop shop for keeping your star shining bright.
+            </p>
+            <div class="social-links mt-3">
+              <a href="https://x.com/" class="twitter"><i class="bi bi-twitter"></i></a>
+              <a href="https://www.facebook.com/login/?next=https%3A%2F%2Fwww.facebook.com%2F" class="facebook"><i
+                  class="bi bi-facebook"></i></a>
+              <a href="https://www.instagram.com/" class="instagram"><i class="bi bi-instagram"></i></a>
+              <a href="https://www.LinkedIn.com/" class="linkedin"><i class="bi bi-linkedin"></i></a>
+            </div>
+          </div>
+
+          <div class="col-lg-2 col-6 footer-links">
+            <h4>Useful Links</h4>
+            <ul>
+              <li><i class="bi bi-chevron-right"></i> <a href="#">Home</a></li>
+              <li>
+                <i class="bi bi-chevron-right"></i> <a href="#">About us</a>
+              </li>
+              <li>
+                <i class="bi bi-chevron-right"></i> <a href="#">Services</a>
+              </li>
+              <li>
+                <i class="bi bi-chevron-right"></i>
+                <a href="#">Terms of service</a>
+              </li>
+              <li>
+                <i class="bi bi-chevron-right"></i>
+                <a href="#">Privacy policy</a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="col-lg-2 col-6 footer-links">
+            <h4>Our Services</h4>
+            <ul>
+              <li>
+                <i class="bi bi-chevron-right"></i> <a href="#">Web Design</a>
+              </li>
+              <li>
+                <i class="bi bi-chevron-right"></i>
+                <a href="#">Web Development</a>
+              </li>
+              <li>
+                <i class="bi bi-chevron-right"></i>
+                <a href="#">Product Management</a>
+              </li>
+              <li>
+                <i class="bi bi-chevron-right"></i> <a href="#">Marketing</a>
+              </li>
+              <li>
+                <i class="bi bi-chevron-right"></i>
+                <a href="#">Graphic Design</a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="col-lg-3 col-md-12 footer-contact text-center text-md-start">
+            <h4>Contact Us</h4>
+            <p>
+              No 53 Ojekunle Street, <br>
+              Papa Ajao,Mushin Lagos
+              <strong>Phone:</strong> +234 805 646 87<br />
+              <strong>Email:</strong> info@CJACKautos.com<br />
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+  <!-- End Footer -->
+
+
+
+
+
+  <!-- Bottom of your template -->
+<script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+<script src="https://code.jquery.com/ui/1.14.1/jquery-ui.js"></script>
+<script>
+  $(function(){
+    $("#product").autocomplete({
+      source: "{% url 'autocomplete' %}",
+      minLength: 2,
+      select: function (event, ui) {
+        // Redirect to product detail page when an item is selected
+        window.location.href = "/single_product/" + ui.item.id + "/";  // Adjust URL pattern to match your product detail URL
+        return false;  // Prevents the default behavior of filling the input
+      },
+      focus: function (event, ui) {
+        // Optional: Update the input with the focused item's label
+        $("#product").val(ui.item.label);
+        return false;
+      }
+    }).autocomplete("instance")._renderItem = function (ul, item) {
+      // Optional: Custom rendering of autocomplete items
+      return $("<li>")
+        .append("<div>" + item.label + "</div>")
+        .appendTo(ul);
+    };
+  });
+</script>
+
+
+
+
+
+
+
+
+
+
+  <!-- At the end of your template, place the script directly (not inside a block) -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      // Get CSRF token
+      const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+      // Add event listeners to all wishlist buttons
+      document.querySelectorAll('.wishlist-btn').forEach(button => {
+        button.addEventListener('click', function (e) {
+          e.preventDefault();
+          e.stopPropagation();
+
+          const productId = this.getAttribute('data-product');
+          const heartIcon = this.querySelector('i');
+
+          // Create form data for the request
+          const formData = new FormData();
+          formData.append('product_id', productId);
+
+          // Send AJAX request to toggle wishlist
+     fetch('{% url "toggle_wishlist" %}', {
+            method: 'POST',
+            body: formData,
+            headers: {
+              'X-CSRFToken': csrfToken
+            },
+            credentials: 'same-origin'
+          })
+            .then(response => response.json())
+            .then(data => {
+              if (data.success) {
+                if (data.in_wishlist) {
+                  // Product was added to wishlist
+                  heartIcon.classList.remove('bi-heart');
+                  heartIcon.classList.add('bi-heart-fill', 'text-danger');
+                  button.classList.add('active');
+                } else {
+                  // Product was removed from wishlist
+                  heartIcon.classList.remove('bi-heart-fill', 'text-danger');
+                  heartIcon.classList.add('bi-heart');
+                  button.classList.remove('active');
+                }
+              }
+            })
+            .catch(error => {
+              console.error('Error:', error);
+            });
+        });
+      });
+    });
+  </script>
+
+
+
+
+
+
+  <!-- Vendor JS Files -->
+  <script src="{% static 'assets/vendor/purecounter/purecounter_vanilla.js' %}"></script>
+  <script src="{% static 'assets/vendor/aos/aos.js' %}"></script>
+  <script src="{% static 'assets/vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+  <script src="{% static 'assets/vendor/glightbox/js/glightbox.min.js' %}"></script>
+  <script src="{% static 'assets/vendor/isotope-layout/isotope.pkgd.min.js' %}"></script>
+  <script src="{% static 'assets/vendor/swiper/swiper-bundle.min.js' %}"></script>
+  <script src="{% static 'assets/vendor/php-email-form/validate.js' %}"></script>
+
+  <!-- Template Main JS File -->
+  <script src="{% static 'assets/js/main.js' %}"></script>
+  <script type="text/javascript" src="{% static 'assets2/js/cart.js' %}"></script>
+</body>
+
+</html>
