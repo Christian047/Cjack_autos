@@ -70,23 +70,83 @@ def autocomplete(request):
 
 
 
-@login_required
+# # @login_required
+# @require_POST
+# def toggle_wishlist(request):
+#     product_id = request.POST.get('product_id')
+#     product = get_object_or_404(Products, id=product_id)
+    
+#     # Check if this product is already in the user's wishlist
+#     wishlist_item = WishlistItem.objects.filter(user=request.user, product=product).first()
+    
+#     if wishlist_item:
+#         # Product is in wishlist, so remove it
+#         wishlist_item.delete()
+#         in_wishlist = False
+#     else:
+#         # Product is not in wishlist, so add it
+#         WishlistItem.objects.create(user=request.user, product=product)
+#         in_wishlist = True
+    
+#     return JsonResponse({
+#         'success': True,
+#         'in_wishlist': in_wishlist,
+#         'product_id': product_id
+#     })
+
+
+# # @login_required
+# def wishlist(request):
+#     wishlist_items = WishlistItem.objects.filter(user=request.user).select_related('product')
+    
+#     context = {
+#         'wishlist_items': wishlist_items
+#     }
+#     return render(request, 'base/wishlist.html', context)
+
+
+
+
+
 @require_POST
 def toggle_wishlist(request):
     product_id = request.POST.get('product_id')
     product = get_object_or_404(Products, id=product_id)
     
-    # Check if this product is already in the user's wishlist
-    wishlist_item = WishlistItem.objects.filter(user=request.user, product=product).first()
-    
-    if wishlist_item:
-        # Product is in wishlist, so remove it
-        wishlist_item.delete()
-        in_wishlist = False
+    if request.user.is_authenticated:
+        # Logged-in user: Use the database
+        wishlist_item = WishlistItem.objects.filter(user=request.user, product=product).first()
+        
+        if wishlist_item:
+            # Product is in wishlist, so remove it
+            wishlist_item.delete()
+            in_wishlist = False
+        else:
+            # Product is not in wishlist, so add it
+            WishlistItem.objects.create(user=request.user, product=product)
+            in_wishlist = True
     else:
-        # Product is not in wishlist, so add it
-        WishlistItem.objects.create(user=request.user, product=product)
-        in_wishlist = True
+        # Anonymous user: Use session
+        # Initialize wishlist in session if it doesn't exist
+        if 'wishlist' not in request.session:
+            request.session['wishlist'] = []
+        
+        # Get the current wishlist
+        wishlist = request.session['wishlist']
+        
+        # Check if product is in wishlist
+        if product_id in wishlist:
+            # Remove it
+            wishlist.remove(product_id)
+            in_wishlist = False
+        else:
+            # Add it
+            wishlist.append(product_id)
+            in_wishlist = True
+        
+        # Save the updated wishlist to session
+        request.session['wishlist'] = wishlist
+        request.session.modified = True
     
     return JsonResponse({
         'success': True,
@@ -94,14 +154,37 @@ def toggle_wishlist(request):
         'product_id': product_id
     })
 
-@login_required
+
 def wishlist(request):
-    wishlist_items = WishlistItem.objects.filter(user=request.user).select_related('product')
+    if request.user.is_authenticated:
+        # Logged-in user: Get wishlist from database
+        wishlist_items = WishlistItem.objects.filter(user=request.user).select_related('product')
+        context = {
+            'wishlist_items': wishlist_items
+        }
+    else:
+        # Anonymous user: Get wishlist from session
+        session_wishlist = request.session.get('wishlist', [])
+        
+        # Get the product objects
+        wishlist_products = Products.objects.filter(id__in=session_wishlist)
+        
+        # Create a list of dictionary items to mimic WishlistItem objects
+        wishlist_items = [{'product': product} for product in wishlist_products]
+        
+        context = {
+            'wishlist_items': wishlist_items
+        }
     
-    context = {
-        'wishlist_items': wishlist_items
-    }
     return render(request, 'base/wishlist.html', context)
+
+
+
+
+
+
+
+
 
 
 

@@ -35,20 +35,42 @@
                     <div style="flex:1"><strong>Total</strong></div>
                     <div style="flex:0.5"></div>
                 </div>
-                {% for item in items %}
-                <div class="cart-row">
-                    <div style="flex:2"><img class="row-image thumbnail" src="{{item.product.picture.url}}"></div>
-                    <div style="flex:2"><p class="small-text">{{item.product.name}}</p></div>
-                    <div style="flex:1"><p class="small-text">₦{{item.product.price|intcomma}}</p></div>
-                    <div style="flex:1">
-                        <div style="display: flex; align-items: center;">
-                            <input type="number" data-product="{{item.product.id}}" class="quantity-input" value="{{item.quantity}}" min="1" max="100" style="width: 50px; height: 30px; margin-right: 5px;">
-                            <a href="{% url 'remove_from_cart' item.product.id %}" class="btn btn-sm btn-danger btn-xs">✕</a>
+                
+                {% if items %}
+                    {% for item in items %}
+                    <div class="cart-row">
+                        <div style="flex:2">
+                            <img class="row-image thumbnail" src="{{ item.product.picture.url }}">
+                        </div>
+                        <div style="flex:2"><p class="small-text">{{ item.product.name }}</p></div>
+                        <div style="flex:1"><p class="small-text">₦{{ item.product.price|intcomma }}</p></div>
+                        <div style="flex:1">
+                            <div style="display: flex; align-items: center;">
+                                {% if request.user.is_authenticated %}
+                                <input type="number" data-product="{{ item.product.id }}" class="quantity-input" 
+                                       value="{{ item.quantity }}" min="1" max="100" 
+                                       style="width: 50px; height: 30px; margin-right: 5px;">
+                                {% else %}
+                                <p class="small-text" style="margin-right: 5px;">{{ item.quantity }}</p>
+                                {% endif %}
+                                
+                                {% if request.user.is_authenticated %}
+                                <a href="{% url 'remove_from_cart' item.product.id %}" class="btn btn-sm btn-danger btn-xs">✕</a>
+                                {% else %}
+                                <button class="btn btn-sm btn-danger btn-xs" onclick="removeGuestItem('{{ item.product.id }}')">✕</button>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div style="flex:1"><p class="small-text">₦{{ item.get_total|intcomma }}</p></div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="cart-row">
+                        <div style="flex:5; text-align: center; padding: 20px;">
+                            <p>Your cart is empty. <a href="{% url 'store' %}">Continue shopping</a>.</p>
                         </div>
                     </div>
-                    <div style="flex:1"><p class="small-text">₦{{item.get_total|intcomma}}</p></div>
-                </div>
-                {% endfor %}
+                {% endif %}
             </div>
         </div>
     </div>
@@ -137,12 +159,56 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
+// Guest user cart functions
+function removeGuestItem(productId) {
+    // Get existing cart from cookies
+    let cart = {};
+    if (document.cookie.includes('cart')) {
+        cart = JSON.parse(getCookie('cart'));
+    }
+    
+    // Delete this product from cart
+    if (cart[productId]) {
+        delete cart[productId];
+    }
+    
+    // Save to cookie and reload
+    document.cookie = 'cart=' + JSON.stringify(cart) + ";domain=;path=/";
+    location.reload();
+}
+
 // Confirm before clearing cart
 function confirmClearCart(event) {
     event.preventDefault();
-    if (confirm("Are you sure you want to clear your cart? This action cannot be undone.")) {
-        window.location.href = "{% url 'clear_cart' %}";
+    
+    // Handle different for guest vs authenticated users
+    var user = '{{ request.user }}';
+    if (user === 'AnonymousUser') {
+        if (confirm("Are you sure you want to clear your cart? This action cannot be undone.")) {
+            document.cookie = 'cart={}; domain=; path=/';
+            location.reload();
+        }
+    } else {
+        if (confirm("Are you sure you want to clear your cart? This action cannot be undone.")) {
+            window.location.href = "{% url 'clear_cart' %}";
+        }
     }
+}
+
+// Helper function to get cookies
+function getCookie(name) {
+    var cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
 }
 </script>
 {% endblock content %}

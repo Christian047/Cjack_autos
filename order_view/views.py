@@ -19,7 +19,7 @@ import json
 from store.models import Order
 from payments.models import Payment  # Adjust app name as needed
 
-@login_required
+# @login_required
 def debug_order_view(request):
     """Debug view to diagnose payment data issues"""
     
@@ -73,7 +73,7 @@ def debug_order_view(request):
     }
     
     return render(request, 'order_view/debug.html', context)
-@login_required
+# @login_required
 def admin_dashboard(request):
     """Main admin dashboard with overview statistics and real-time data"""
     
@@ -184,7 +184,7 @@ def admin_dashboard(request):
 
 logger = logging.getLogger(__name__)
 
-@login_required
+# @login_required
 def order_list(request):
     """Improved view that shows orders with complete data first"""
     
@@ -251,7 +251,7 @@ def order_list(request):
         # Create order data dictionary
         order_info = {
             'id': order.id,
-            'customer_name': str(order.customer) if order.customer else "Guest",
+            'customer_name': str(order.customer) if order.customer and hasattr(order.customer, '__str__') and order.customer.__str__() is not None else "Guest",
             'date_ordered': order.date_ordered,
             'formatted_date': order.date_ordered.strftime('%Y-%m-%d'),
             'formatted_time': order.date_ordered.strftime('%H:%M:%S'),
@@ -292,7 +292,7 @@ def order_list(request):
     return render(request, 'order_view/order_list.html', context)
 
 
-@login_required
+# @login_required
 def order_detail(request, order_id):
     """View detailed information about a specific order"""
     
@@ -356,7 +356,7 @@ def order_detail(request, order_id):
 
 
 
-@login_required
+# @login_required
 def mark_order_complete(request, order_id):
     """Mark an order as complete"""
     
@@ -376,7 +376,7 @@ def mark_order_complete(request, order_id):
     return redirect('order_list')
 
 
-@login_required
+# @login_required
 def sales_report(request):
     """Generate sales reports and statistics"""
     

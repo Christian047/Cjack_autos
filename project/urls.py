@@ -12,19 +12,12 @@ urlpatterns = [
     path('payments/', include('payments.urls')),
     path('receipts/', include('receipts.urls')),
     path('order/', include('order_view.urls')),
-    # path('auth/', include('authentication.urls')),
-    # path('reviews/', include('reviews.urls')),
-    # path('sendmail/', include('sendmail.urls')),
-    # path('payments/', include('payments.urls')),
-    # path('like/', include('like.urls')),
-    # path('usercrud/', include('usercrud.urls')),
-    # path('accounts/', include('allauth.urls')),
 
-    
     ]
 
 
-# append static url and root folder to urlpatterns
-urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 

@@ -49,7 +49,7 @@ def initiate_payment(request):
                 
                 # Add the items to the order
                 for item in items:
-                    product = Product.objects.get(id=item['id'])
+                    product = Products.objects.get(id=item['id'])
                     OrderItem.objects.create(
                         product=product,
                         order=actual_order,
@@ -185,7 +185,7 @@ def verify_payment(request, ref):
         total_price = 0
         for product_id, item_data in cart_data.items():
             try:
-                product = Product.objects.get(id=product_id)
+                product = Products.objects.get(id=product_id)
                 quantity = item_data.get('quantity', 1)
                 
                 # Create order item
