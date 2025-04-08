@@ -849,7 +849,7 @@ section {
 @media (max-width: 991px) {
   .hero {
     height: auto;
-    padding: 120px 0 60px 0;
+    padding: 40px 0 ;
   }
 
   .hero .hero-img {
@@ -858,7 +858,11 @@ section {
   }
 
   .hero .hero-img img {
-    width: 80%;
+    /* width: 80%; */
+  
+    width: 320px !important;
+   
+    
   }
 }
 
@@ -1803,6 +1807,174 @@ section {
 .searchbar form input[type=submit]:hover {
   background: #5969f3;
 }
+
+
+
+
+
+/* Mercedes Custom Carousel CSS - All Unique Class Names */
+
+.merc-showcase {
+  max-width: 1000px;
+  margin: 0 auto;
+  position: relative;
+  padding: 20px 0;
+  background-color: #ffffff;
+  border-radius: 8px;
+}
+
+/* Slide styling */
+.merc-item {
+  display: none;
+  text-align: center;
+  padding: 10px;
+  transition: opacity 0.4s ease;
+}
+
+.merc-item.merc-active {
+  display: block;
+}
+
+.merc-image {
+  width: 100%;
+  max-width: 400px;
+  height: auto;
+  border-radius: 6px;
+}
+
+.merc-name {
+  margin-top: 16px;
+  font-size: 22px;
+  color: #0d3b66;
+  font-weight: bold;
+}
+
+/* Button styling */
+.merc-parts-btn {
+  display: inline-block;
+  margin-top: 16px;
+  background-color: #4361ee;
+  color: white;
+  padding: 12px 24px;
+  border-radius: 4px;
+  text-decoration: none;
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+
+.merc-parts-btn:hover {
+  background-color: #3a56d4;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(67, 97, 238, 0.3);
+}
+
+/* Navigation area */
+.merc-nav-area {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 25px;
+  padding: 0 20px;
+}
+
+/* Indicator dots */
+.merc-indicators {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 0 20px;
+}
+
+.merc-dot {
+  height: 10px;
+  width: 10px;
+  background-color: #d1d1d1;
+  border-radius: 50%;
+  display: inline-block;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.merc-dot.merc-active {
+  background-color: #4361ee;
+  transform: scale(1.2);
+}
+
+/* Navigation arrows */
+.merc-prev,
+.merc-next {
+  width: 40px;
+  height: 40px;
+  background-color: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #4361ee;
+  font-size: 24px;
+  transition: all 0.2s ease;
+  outline: none;
+}
+
+.merc-prev:hover,
+.merc-next:hover {
+  background-color: #4361ee;
+  color: white;
+  box-shadow: 0 2px 8px rgba(67, 97, 238, 0.3);
+}
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+  .merc-name {
+    font-size: 18px;
+  }
+
+  .merc-indicators {
+    max-width: 70%;
+    gap: 10px;
+  }
+
+  .merc-dot {
+    height: 8px;
+    width: 8px;
+  }
+
+  .merc-prev,
+  .merc-next {
+    width: 36px;
+    height: 36px;
+    font-size: 20px;
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -42,9 +42,13 @@
             </div>
           </div>
         </div>
+
+
         <div class="col-lg-6 hero-img px-4 text-center" data-aos="zoom-out" data-aos-delay="200">
-         <img src="/media/Merc1.png" class="img-fluid mx-4" alt="" style="width: 350px" />
+         <img src="/media/Merc1.png" class="img-fluid mx-4" alt="" style="width: 380px" />
         </div>
+
+
       </div>
     </div>
   </section>
@@ -100,7 +104,7 @@
     
 
     <!-- Carousel -->
-    <section>
+    {% comment %} <section>
 
       <header class="section-header">
         <h2>Blog</h2>
@@ -147,8 +151,68 @@
           <span class="visually-hidden">Next</span>
         </button>
       </div>
-    </section>
+    </section> {% endcomment %}
 
+
+
+<section>
+  <header class="section-header">
+    <h2>Mercedes Vehicle Selection</h2>
+    <p>Select your model to browse compatible parts</p>
+  </header>
+  <div class="merc-showcase">
+    <!-- Animated wheel elements -->
+    <div class="merc-wheel-left"></div>
+    <div class="merc-wheel-right"></div>
+    
+    <!-- Fully dynamic approach - all cars from Django -->
+    {% for car in cars %}
+        <div class="merc-item {% if forloop.first %}merc-active{% endif %}">
+            <img src="{{ car.picture.url }}" alt="{{ car.name }}" class="merc-image">
+            <h2 class="merc-name">{{ car.name }}</h2>
+            <a href="{% url 'car_model' car.pk %}" class="merc-parts-btn">Browse Parts</a>
+        </div>
+    {% empty %}
+        <!-- Fallback only if no cars are in the database -->
+        <div class="merc-item merc-active">
+            <img src="/media/Cars/A-Class Sedan.jpg" alt="A-Class Sedan" class="merc-image">
+            <h2 class="merc-name">A-Class Sedan</h2>
+            <a href="#" class="merc-parts-btn">Browse Parts</a>
+        </div>
+    {% endfor %}
+
+    <!-- Navigation controls with dynamic indicators -->
+    <div class="merc-nav-area">
+        <button class="merc-prev" aria-label="Previous car">&lsaquo;</button>
+        <div class="merc-indicators">
+            {% for car in cars %}
+                <span class="merc-dot {% if forloop.first %}merc-active{% endif %}"></span>
+            {% empty %}
+                <!-- Single dot for fallback -->
+                <span class="merc-dot merc-active"></span>
+            {% endfor %}
+        </div>
+        <button class="merc-next" aria-label="Next car">&rsaquo;</button>
+    </div>
+  </div>
+</section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
 
     <section>
       <div class=" entries">
@@ -993,6 +1057,126 @@
 
   <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i
       class="bi bi-arrow-up-short"></i></a>
+
+
+
+
+      <script>// Mercedes Custom Carousel JavaScript - Unique function names
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize the Mercedes showcase
+    initMercedesShowcase();
+});
+
+function initMercedesShowcase() {
+    const showcase = document.querySelector('.merc-showcase');
+    if (!showcase) return;
+    
+    // Get all slides and dots
+    const slides = showcase.querySelectorAll('.merc-item');
+    const dots = showcase.querySelectorAll('.merc-dot');
+    const prevBtn = showcase.querySelector('.merc-prev');
+    const nextBtn = showcase.querySelector('.merc-next');
+    
+    if (!slides.length || !dots.length) return;
+    
+    // Find current active slide index
+    let currentSlide = 0;
+    slides.forEach((slide, index) => {
+        if (slide.classList.contains('merc-active')) {
+            currentSlide = index;
+        }
+    });
+    
+    function showMercSlide(n) {
+        // Remove active class from all slides and dots
+        slides.forEach(slide => slide.classList.remove('merc-active'));
+        dots.forEach(dot => dot.classList.remove('merc-active'));
+        
+        // Calculate the index with wrap-around
+        currentSlide = (n + slides.length) % slides.length;
+        
+        // Add active class to current slide and dot
+        slides[currentSlide].classList.add('merc-active');
+        dots[currentSlide].classList.add('merc-active');
+    }
+    
+    // Add click events to dots
+    dots.forEach((dot, index) => {
+        dot.addEventListener('click', () => {
+            showMercSlide(index);
+        });
+    });
+    
+    // Add click events to navigation buttons
+    if (prevBtn && nextBtn) {
+        nextBtn.addEventListener('click', () => {
+            showMercSlide(currentSlide + 1);
+        });
+        
+        prevBtn.addEventListener('click', () => {
+            showMercSlide(currentSlide - 1);
+        });
+    }
+    
+    // Auto-advance carousel
+    let mercAutoSlide = setInterval(() => {
+        showMercSlide(currentSlide + 1);
+    }, 5000);
+    
+    // Pause auto-advance on user interaction
+    showcase.addEventListener('mouseenter', () => {
+        clearInterval(mercAutoSlide);
+    });
+    
+    showcase.addEventListener('mouseleave', () => {
+        mercAutoSlide = setInterval(() => {
+            showMercSlide(currentSlide + 1);
+        }, 5000);
+    });
+    
+    // Add touch swipe functionality for mobile
+    let mercTouchStartX = 0;
+    let mercTouchEndX = 0;
+    
+    showcase.addEventListener('touchstart', (e) => {
+        mercTouchStartX = e.changedTouches[0].screenX;
+        clearInterval(mercAutoSlide); // Pause on touch
+    });
+    
+    showcase.addEventListener('touchend', (e) => {
+        mercTouchEndX = e.changedTouches[0].screenX;
+        handleMercSwipe();
+        
+        // Resume auto-advance
+        mercAutoSlide = setInterval(() => {
+            showMercSlide(currentSlide + 1);
+        }, 5000);
+    });
+    
+    function handleMercSwipe() {
+        // Detect swipe direction with a reasonable threshold
+        const swipeThreshold = 50;
+        
+        if (mercTouchEndX + swipeThreshold < mercTouchStartX) {
+            // Left swipe
+            showMercSlide(currentSlide + 1);
+        } else if (mercTouchEndX > mercTouchStartX + swipeThreshold) {
+            // Right swipe
+            showMercSlide(currentSlide - 1);
+        }
+    }
+    
+    // Make sure keyboard users can navigate too
+    showcase.setAttribute('tabindex', '0');
+    showcase.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight') {
+            showMercSlide(currentSlide + 1);
+        } else if (e.key === 'ArrowLeft') {
+            showMercSlide(currentSlide - 1);
+        }
+    });
+}</script>
 </body>
 
 {% endblock %}
