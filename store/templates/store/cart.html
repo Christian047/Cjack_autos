@@ -4,18 +4,16 @@
 {% load humanize %}
 
 <br>
-<br>
 <section class="container p-4 pt-4"> 
     <div class="row">
         <div class="col-lg-12">
             <div class="box-element">
-                <div style="display: flex; justify-content: space-between; flex-wrap: wrap;">
+                <div class="cart-actions">
                     <a class="btn btn-outline-dark" href="{% url 'home' %}">&#x2190; Continue Shopping</a>
                     <a class="btn btn-sm btn-danger" href="#" onclick="confirmClearCart(event)">Clear Cart</a>
                 </div>
                 <br>
-                <br>
-                <table class="table">
+                <table class="table cart-summary">
                     <tr>
                         <th><h5>Items: <strong>{{order.get_cart_items}}</strong></h5></th>
                         <th><h5>Total:<strong> ₦{{order.get_cart_total|intcomma}}</strong></h5></th>
@@ -27,49 +25,81 @@
             </div>
             <br>
             <div class="box-element">
-                <div class="cart-row">
+                <!-- Desktop Table Header (visible on larger screens) -->
+                <div class="cart-row desktop-header d-none d-md-flex">
                     <div style="flex:1"></div>
                     <div style="flex:1"><strong>Item</strong></div>
                     <div style="flex:1"><strong>Price</strong></div>
-                    <div style="flex:4"><strong>Quantity</strong></div>
+                    <div style="flex:1"><strong>Quantity</strong></div>
                     <div style="flex:1"><strong>Total</strong></div>
                     <div style="flex:1"></div>
                 </div>
                 
                 {% if items %}
                     {% for item in items %}
-                    <div class="cart-row">
+                    <!-- Desktop Version -->
+                    <div class="cart-row desktop-item d-none d-md-flex">
                         <div style="flex:1">
-                            <img class="row-image thumbnail" src="{{ item.product.picture.url }}">
+                            <img class="thumbnail" src="{{ item.product.picture.url }}">
                         </div>
-                        <div style="flex:1"><p class="small-text">{{ item.product.name }}</p></div>
-                        <div style="flex:1"><p class="small-text">₦{{ item.product.price|intcomma }}</p></div>
-                        <div style="flex:4">
-                            <div style="display: flex; align-items: center;">
+                        <div style="flex:1"><p>{{ item.product.name }}</p></div>
+                        <div style="flex:1"><p>₦{{ item.product.price|intcomma }}</p></div>
+                        <div style="flex:1">
+                            <div class="quantity-controls">
                                 {% if request.user.is_authenticated %}
                                 <input type="number" data-product="{{ item.product.id }}" class="quantity-input" 
-                                       value="{{ item.quantity }}" min="1" max="100" 
-                                       style="width: 50px; height: 30px; margin-right: 5px;">
+                                       value="{{ item.quantity }}" min="1" max="100">
                                 {% else %}
-                                <p class="small-text" style="margin-right: 5px;">{{ item.quantity }}</p>
-                                {% endif %}
-                                
-                                {% if request.user.is_authenticated %}
-                                <a href="{% url 'remove_from_cart' item.product.id %}" class="btn btn-sm btn-danger btn-xs">✕</a>
-                                {% else %}
-                                <button class="btn btn-sm btn-danger btn-xs" onclick="removeGuestItem('{{ item.product.id }}')">✕</button>
+                                <p>{{ item.quantity }}</p>
                                 {% endif %}
                             </div>
                         </div>
-                        <div style="flex:1"><p class="small-text">₦{{ item.get_total|intcomma }}</p></div>
-                        <div style="flex:1"></div>
+                        <div style="flex:1"><p>₦{{ item.get_total|intcomma }}</p></div>
+                        <div style="flex:1">
+                            {% if request.user.is_authenticated %}
+                            <a href="{% url 'remove_from_cart' item.product.id %}" class="btn btn-sm btn-danger">✕</a>
+                            {% else %}
+                            <button class="btn btn-sm btn-danger" onclick="removeGuestItem('{{ item.product.id }}')">✕</button>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Mobile Version -->
+                    <div class="mobile-item d-md-none">
+                        <div class="mobile-item-header">
+                            <img class="thumbnail" src="{{ item.product.picture.url }}">
+                            <div class="mobile-item-info">
+                                <h6>{{ item.product.name }}</h6>
+                                <p class="price">₦{{ item.product.price|intcomma }}</p>
+                            </div>
+                        </div>
+                        <div class="mobile-item-footer">
+                            <div class="mobile-quantity">
+                                {% if request.user.is_authenticated %}
+                                <input type="number" data-product="{{ item.product.id }}" class="quantity-input" 
+                                       value="{{ item.quantity }}" min="1" max="100">
+                                <span class="quantity-label">Qty:</span>
+                                {% else %}
+                                <p>Quantity: {{ item.quantity }}</p>
+                                {% endif %}
+                            </div>
+                            <div class="mobile-total">
+                                <p class="total-label">Total:</p>
+                                <p class="total-price">₦{{ item.get_total|intcomma }}</p>
+                            </div>
+                            <div class="mobile-remove">
+                                {% if request.user.is_authenticated %}
+                                <a href="{% url 'remove_from_cart' item.product.id %}" class="btn btn-sm btn-danger">Remove</a>
+                                {% else %}
+                                <button class="btn btn-sm btn-danger" onclick="removeGuestItem('{{ item.product.id }}')">Remove</button>
+                                {% endif %}
+                            </div>
+                        </div>
                     </div>
                     {% endfor %}
                 {% else %}
-                    <div class="cart-row">
-                        <div style="flex:5; text-align: center; padding: 20px;">
-                            <p>Your cart is empty. <a href="{% url 'store' %}">Continue shopping</a>.</p>
-                        </div>
+                    <div class="empty-cart">
+                        <p>Your cart is empty. <a href="{% url 'store' %}">Continue shopping</a>.</p>
                     </div>
                 {% endif %}
             </div>
@@ -82,40 +112,107 @@
         width: 50px;
         height: 50px;
         object-fit: cover;
+        border-radius: 4px;
     }
     
-    .small-text {
-        font-size: 0.85rem;
-        margin-bottom: 0;
-    }
-    
-    .btn-xs {
-        padding: 0.2rem 0.4rem;
-        font-size: 0.7rem;
-    }
-
+    /* Desktop Styles */
     .cart-row {
         display: flex;
         align-items: center;
+        padding: 12px 0;
+        border-bottom: 1px solid #eee;
+    }
+    
+    .desktop-header {
+        font-weight: bold;
+        border-bottom: 2px solid #333;
         padding: 10px 0;
     }
     
-    /* Mobile responsiveness */
-    @media (max-width: 768px) {
-        .cart-row {
-            display: flex;
-            flex-wrap: wrap;
-            padding: 8px 0;
+    .quantity-controls {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .quantity-input {
+        width: 60px;
+        padding: 5px;
+        text-align: center;
+    }
+    
+    /* Mobile Styles */
+    .mobile-item {
+        padding: 12px 0;
+        border-bottom: 1px solid #eee;
+    }
+    
+    .mobile-item-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 10px;
+    }
+    
+    .mobile-item-info {
+        flex-grow: 1;
+    }
+    
+    .mobile-item-info h6 {
+        margin-bottom: 4px;
+        font-weight: 600;
+    }
+    
+    .price {
+        color: #666;
+        font-size: 0.9rem;
+    }
+    
+    .mobile-item-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .mobile-quantity {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .mobile-total {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+    
+    .total-label {
+        color: #666;
+    }
+    
+    .total-price {
+        font-weight: bold;
+    }
+    
+    .empty-cart {
+        text-align: center;
+        padding: 20px;
+    }
+    
+    /* Responsive Visibility */
+    @media (min-width: 768px) {
+        .mobile-item {
+            display: none;
         }
-
-        .cart-row > div {
-            padding: 2px;
+    }
+    
+    @media (max-width: 767px) {
+        .desktop-header,
+        .desktop-item {
+            display: none;
         }
     }
 </style>
-
-
-
 
 
 <script>
