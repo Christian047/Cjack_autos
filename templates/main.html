@@ -153,7 +153,7 @@
         <path
           d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 12H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5zM3.102 4l1.313 7h8.17l1.313-7H3.102zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm-7 1a1 1 0 1 1 0 2 1 1 0 0 1 0-2zm7 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2z" />
       </svg>
-      <span class="cart-badge">
+      <span class="cart-badge" id="cart-count">
         {{cartItems}}
       </span>
     </div>
@@ -379,7 +379,7 @@
   <script>
     document.addEventListener('DOMContentLoaded', function () {
       // Get CSRF token
-      const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+      var csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
 
       // Add event listeners to all wishlist buttons
       document.querySelectorAll('.wishlist-btn').forEach(button => {
@@ -426,6 +426,121 @@
       });
     });
   </script>
+
+
+
+
+
+
+
+
+<!-- At the bottom of your template, add this script -->
+<script type="text/javascript">
+  // Set user variable to check if authenticated
+  var user = '{{ request.user }}';
+
+  // Get CSRF token
+  function getToken(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+      const cookies = document.cookie.split(';');
+      for (let i = 0; i < cookies.length; i++) {
+        const cookie = cookies[i].trim();
+        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+          break;
+        }
+      }
+    }
+    return cookieValue;
+  }
+  var csrftoken = getToken('csrftoken');
+</script>
+
+
+
+<!-- Add this at the end of your body, after all other scripts -->
+<script>
+  // Wait for page to load
+  document.addEventListener('DOMContentLoaded', function () {
+    // Get all cart buttons
+    var cartButtons = document.querySelectorAll('.update-cart');
+
+    // For each button
+    cartButtons.forEach(function (button) {
+      // Replace with a clone to remove existing handlers
+      var clonedButton = button.cloneNode(true);
+      button.parentNode.replaceChild(clonedButton, button);
+
+      // Add our click handler
+      clonedButton.addEventListener('click', function (e) {
+        // Prevent page refresh
+        e.preventDefault();
+        e.stopPropagation();
+
+        // Get product info
+        var productId = this.dataset.product;
+        var action = this.dataset.action;
+
+        // Send AJAX request
+        fetch('store/update_item/', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrftoken
+          },
+          body: JSON.stringify({
+            'productId': productId,
+            'action': action
+          })
+        })
+          .then(function (response) {
+            return response.json();
+          })
+          .then(function (data) {
+            console.log('Success:', data);
+
+            // Update cart count if element exists
+            var cartCountElement = document.getElementById('cart-count');
+            if (cartCountElement && data.cart_count) {
+              cartCountElement.textContent = data.cart_count;
+            }
+
+            // Show added to cart message
+            showMessage('Added to cart!');
+          })
+          .catch(function (error) {
+            console.error('Error:', error);
+          });
+
+        return false;
+      });
+    });
+
+    // Simple message function
+    function showMessage(message, color = '#ffffff') {  // Default color is Bootstrap primary
+      var notif = document.createElement('div');
+      notif.style.position = 'fixed';
+      notif.style.top = '20px';
+      notif.style.right = '20px';
+      notif.style.backgroundColor = color;
+      notif.style.color = 'blue';
+      notif.style.padding = '10px 20px';
+      notif.style.borderRadius = '4px';
+      notif.style.zIndex = '9999';
+      notif.textContent = message;
+
+      document.body.appendChild(notif);
+
+      setTimeout(function () {
+        document.body.removeChild(notif);
+      }, 3000);
+    }
+  });
+</script>
+
+
+
 
 
 

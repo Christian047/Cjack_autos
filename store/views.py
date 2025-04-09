@@ -9,6 +9,7 @@ from django.shortcuts import redirect
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.urls import reverse
 from .models import OrderItem, Order
+from django.views.decorators.csrf import csrf_exempt
 
 def store(request):
 	data = cartData(request)
@@ -44,28 +45,58 @@ def checkout(request):
 	context = {'items':items, 'order':order, 'cartItems':cartItems}
 	return render(request, 'store/checkout.html', context)
 
+
+
+
+
+
+
+
+@csrf_exempt
 def updateItem(request):
-	data = json.loads(request.body)
-	productId = data['productId']
-	action = data['action']
+    data = json.loads(request.body)
+    productId = data['productId']
+    action = data['action']
 
-	customer = request.user.customer
-	product = Products.objects.get(id=productId)
-	order, created = Order.objects.get_or_create(customer=customer, complete=False)
+    customer = request.user.customer
+    product = Products.objects.get(id=productId)
+    order, created = Order.objects.get_or_create(customer=customer, complete=False)
 
-	orderItem, created = OrderItem.objects.get_or_create(order=order, product=product)
+    orderItem, created = OrderItem.objects.get_or_create(order=order, product=product)
 
-	if action == 'add':
-		orderItem.quantity = (orderItem.quantity + 1)
-	elif action == 'remove':
-		orderItem.quantity = (orderItem.quantity - 1)
+    if action == 'add':
+        orderItem.quantity = (orderItem.quantity + 1)
+    elif action == 'remove':
+        orderItem.quantity = (orderItem.quantity - 1)
 
-	orderItem.save()
+    orderItem.save()
 
-	if orderItem.quantity <= 0:
-		orderItem.delete()
+    if orderItem.quantity <= 0:
+        orderItem.delete()
 
-	return JsonResponse('Item was added', safe=False)
+    # Get the current cart count
+    cart_count = order.get_cart_items if hasattr(order, 'get_cart_items') else order.orderitem_set.all().count()
+
+    # Return JSON response with cart count
+    return JsonResponse({
+        'message': 'Item was added',
+        'cart_count': cart_count
+    }, safe=False)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 def processOrder(request):
 	transaction_id = datetime.datetime.now().timestamp()

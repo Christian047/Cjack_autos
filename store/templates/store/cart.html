@@ -10,7 +10,7 @@
         <div class="col-lg-12">
             <div class="box-element">
                 <div style="display: flex; justify-content: space-between; flex-wrap: wrap;">
-                    <a class="btn btn-outline-dark" href="{% url 'store' %}">&#x2190; Continue Shopping</a>
+                    <a class="btn btn-outline-dark" href="{% url 'home' %}">&#x2190; Continue Shopping</a>
                     <a class="btn btn-sm btn-danger" href="#" onclick="confirmClearCart(event)">Clear Cart</a>
                 </div>
                 <br>
@@ -28,23 +28,23 @@
             <br>
             <div class="box-element">
                 <div class="cart-row">
-                    <div style="flex:2"></div>
-                    <div style="flex:2"><strong>Item</strong></div>
+                    <div style="flex:1"></div>
+                    <div style="flex:1"><strong>Item</strong></div>
                     <div style="flex:1"><strong>Price</strong></div>
-                    <div style="flex:1"><strong>Quantity</strong></div>
+                    <div style="flex:4"><strong>Quantity</strong></div>
                     <div style="flex:1"><strong>Total</strong></div>
-                    <div style="flex:0.5"></div>
+                    <div style="flex:1"></div>
                 </div>
                 
                 {% if items %}
                     {% for item in items %}
                     <div class="cart-row">
-                        <div style="flex:2">
+                        <div style="flex:1">
                             <img class="row-image thumbnail" src="{{ item.product.picture.url }}">
                         </div>
-                        <div style="flex:2"><p class="small-text">{{ item.product.name }}</p></div>
+                        <div style="flex:1"><p class="small-text">{{ item.product.name }}</p></div>
                         <div style="flex:1"><p class="small-text">₦{{ item.product.price|intcomma }}</p></div>
-                        <div style="flex:1">
+                        <div style="flex:4">
                             <div style="display: flex; align-items: center;">
                                 {% if request.user.is_authenticated %}
                                 <input type="number" data-product="{{ item.product.id }}" class="quantity-input" 
@@ -62,6 +62,7 @@
                             </div>
                         </div>
                         <div style="flex:1"><p class="small-text">₦{{ item.get_total|intcomma }}</p></div>
+                        <div style="flex:1"></div>
                     </div>
                     {% endfor %}
                 {% else %}
@@ -92,6 +93,12 @@
         padding: 0.2rem 0.4rem;
         font-size: 0.7rem;
     }
+
+    .cart-row {
+        display: flex;
+        align-items: center;
+        padding: 10px 0;
+    }
     
     /* Mobile responsiveness */
     @media (max-width: 768px) {
@@ -100,12 +107,16 @@
             flex-wrap: wrap;
             padding: 8px 0;
         }
-        
+
         .cart-row > div {
             padding: 2px;
         }
     }
 </style>
+
+
+
+
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
