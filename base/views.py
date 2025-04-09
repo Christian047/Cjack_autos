@@ -248,3 +248,87 @@ class AboutView(View):
 class SearchView(View):
     def get(self,request):
        return render(request,'base/Search.html')
+   
+   
+   
+   
+   
+# views.py
+# from django.shortcuts import render
+from django.db.models import Q
+
+def product_filter(request):
+    # Get all products initially
+    products = Products.objects.all()
+    
+    # Get all categories and car models for the filter dropdowns
+    categories = Catalogue.objects.all()
+    car_models = Car_Model.objects.all()
+    
+    # Get all available chassis types from choices
+    chassis_types = Products.objects.values_list('chassis', flat=True).distinct()
+    
+    # Get min and max prices for the price range slider
+    min_price = Products.objects.order_by('price').first().price if products.exists() else 0
+    max_price = Products.objects.order_by('-price').first().price if products.exists() else 10000
+    
+    # Filtering logic
+    if request.method == 'GET':
+        # Category filter
+        category_id = request.GET.get('category')
+        if category_id:
+            products = products.filter(cat_id=category_id)
+        
+        # Car model filter
+        car_model_id = request.GET.get('car_model')
+        if car_model_id:
+            products = products.filter(car_model_id=car_model_id)
+        
+        # Chassis filter
+        chassis = request.GET.get('chassis')
+        if chassis:
+            products = products.filter(chassis=chassis)
+        
+        # Price range filter
+        price_min = request.GET.get('price_min')
+        price_max = request.GET.get('price_max')
+        if price_min:
+            products = products.filter(price__gte=price_min)
+        if price_max:
+            products = products.filter(price__lte=price_max)
+        
+        # Trending filter
+        trending = request.GET.get('trending')
+        if trending == 'on':
+            products = products.filter(is_trending=True)
+        
+        # Discount filter
+        discount = request.GET.get('discount')
+        if discount == 'on':
+            products = products.filter(discount_percentage__gt=0)
+        
+        # Stock availability filter
+        in_stock = request.GET.get('in_stock')
+        if in_stock == 'on':
+            products = products.filter(stock_quantity__gt=0)
+        
+        # Search query filter
+        query = request.GET.get('q')
+        if query:
+            products = products.filter(
+                Q(name__icontains=query) | 
+                Q(model__icontains=query) | 
+                Q(description__icontains=query)
+            )
+    
+    context = {
+        'products': products,
+        'categories': categories,
+        'car_models': car_models,
+        'chassis_types': chassis_types,
+        'min_price': min_price,
+        'max_price': max_price,
+        'filter_applied': request.GET != {},
+    }
+    
+    return render(request, 'products/product_list.html', context)

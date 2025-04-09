@@ -6,6 +6,7 @@
 <head>
   <meta charset="utf-8" />
   <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <!-- <meta name="viewport" content="width=device-width, initial-scale=1"> -->
 
   <title>FlexStart Bootstrap Template - Index</title>
   <meta content="" name="description" />
@@ -137,7 +138,7 @@
   <div class="container-fluid container-xl d-flex align-items-center justify-content-between">
     <!-- Logo -->
     <a href="{% url 'home' %}" class="logo d-flex align-items-center">
-      <img src="{% static 'assets/img/logo.png' %}" alt="" />
+      <img src="media/logo.png" alt="" />
       <span>CJACK AUTOS</span>
     </a>
 
@@ -171,7 +172,7 @@
           <li><a href="{% url 'wishlist' %}">Wishlist</a></li>
           <li><a href="{% url 'orders' %}">Admin Dashboard</a></li>
 
-          <li class="dropdown megamenu">
+          <!-- <li class="dropdown megamenu">
             <a href="#"><span>Categories</span> <i class="bi bi-chevron-down"></i></a>
             <ul>
               <li>
@@ -190,7 +191,7 @@
                 <a href="#">Column 3 link 3</a>
               </li>
             </ul>
-          </li>
+          </li> -->
 
      
           <li>
@@ -198,8 +199,10 @@
                 class="search-text">Search</span></a>
           </li>
 
+
+          
           <li>
-            <a class="getstarted scrollto" href="#about">Get Started</a>
+            <a class="getstarted scrollto" href="#about"> Advanced Filter</a>
           </li>
         </ul>
 

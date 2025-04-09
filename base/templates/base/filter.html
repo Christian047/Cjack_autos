@@ -1,0 +1,170 @@
+{% extends 'base.html' %}
+
+{% block content %}    
+  <!-- This is how you would modify your existing header to add a filter button -->
+  <!-- Add this near your search icon or wherever appropriate in your header -->
+
+  <header id="header" class="header fixed-top">
+    <div class="container-fluid container-xl d-flex align-items-center justify-content-between">
+      <!-- Logo -->
+      <a href="{% url 'home' %}" class="logo d-flex align-items-center">
+        <img src="media/logo.png" alt="" />
+        <span>CJACK AUTOS</span>
+      </a>
+
+      <!-- Right side container for cart, filter and nav toggle -->
+      <div class="d-flex align-items-center">
+        <!-- Cart Icon -->
+        <div class="me-3">
+          <a href="{% url 'cart' %}" class="cart-icon-container">
+            <div class="cart-icon-wrapper">
+              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor"
+                class="bi bi-cart text-dark" viewBox="0 0 16 16">
+                <path
+                  d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 12H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5zM3.102 4l1.313 7h8.17l1.313-7H3.102zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm-7 1a1 1 0 1 1 0 2 1 1 0 0 1 0-2zm7 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2z" />
+              </svg>
+              <span class="cart-badge">
+                {{cartItems}}
+              </span>
+            </div>
+          </a>
+        </div>
+
+        <!-- Filter Button - Add this button to trigger the filter offcanvas -->
+        <div class="me-3">
+          <button class="btn btn-outline-primary filter-btn" type="button" data-bs-toggle="offcanvas"
+            data-bs-target="#filterOffcanvas" aria-controls="filterOffcanvas">
+            <i class="bi bi-funnel-fill"></i>
+            <span class="filter-text d-none d-md-inline">Filter</span>
+          </button>
+        </div>
+
+        <!-- Existing Navigation -->
+        <nav id="navbar" class="navbar">
+          <!-- Your existing nav items -->
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <!-- Add this off-canvas element to your base template or home template -->
+  <div class="offcanvas offcanvas-start" tabindex="-1" id="filterOffcanvas" aria-labelledby="filterOffcanvasLabel">
+    <div class="offcanvas-header">
+      <h5 class="offcanvas-title" id="filterOffcanvasLabel">Product Filters</h5>
+      <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+
+    <!-- The filter offcanvas body from the previous code goes here -->
+    <div class="offcanvas-body">
+      <!-- Filter Form -->
+      <!-- This is the complete, correct filter form that should work without any template errors -->
+      <form method="GET" action="." id="filter-form">
+        <!-- Search Box -->
+        <div class="mb-3">
+          <label for="q" class="form-label">Search Products</label>
+          <input type="text" class="form-control" id="q" name="q" placeholder="Search..." value="{{ request.GET.q }}">
+        </div>
+      
+        <!-- Category Filter -->
+        <div class="mb-3">
+          <label for="category" class="form-label">Category</label>
+          <select class="form-select" id="category" name="category">
+            <option value="">All Categories</option>
+            {% for category in categories %}
+          <option value="{{ category.id }}" {% with cat_id=category.id|stringformat:"i" %} {% if request.GET.category == cat_id %}
+            selected {% endif %}{% endwith %}>
+              {{ category.name }}
+            </option>
+            {% endfor %}
+          </select>
+        </div>
+      
+        <!-- Car Model Filter -->
+        <div class="mb-3">
+          <label for="car_model" class="form-label">Car Model</label>
+          <select class="form-select" id="car_model" name="car_model">
+            <option value="">All Car Models</option>
+            {% for model in car_models %}
+          <option value="{{ model.id }}" {% if request.GET.car_model == model.id|stringformat:"i" %}selected{% endif %}>
+            {{ model.name }}
+          </option>
+            {% endfor %}
+          </select>
+        </div>
+      
+        <!-- Chassis Type Filter -->
+        <div class="mb-3">
+          <label for="chassis" class="form-label">Chassis Type</label>
+          <select class="form-select" id="chassis" name="chassis">
+            <option value="">All Chassis Types</option>
+            {% for chassis in chassis_types %}
+            {% if chassis %}
+            <option value="{{ chassis }}" {% if request.GET.chassis == chassis %} selected {% endif %}>
+              {{ chassis }}
+            </option>
+            {% endif %}
+            {% endfor %}
+          </select>
+        </div>
+      
+        <!-- Price Range Filter -->
+        <div class="mb-3">
+          <label for="price-range" class="form-label">Price Range</label>
+          <div class="d-flex align-items-center mb-2">
+            <input type="number" class="form-control me-2" id="price_min" name="price_min" placeholder="Min"
+              value="{{ request.GET.price_min }}">
+            <span>to</span>
+            <input type="number" class="form-control ms-2" id="price_max" name="price_max" placeholder="Max"
+              value="{{ request.GET.price_max }}">
+          </div>
+          <div class="price-slider">
+         
+          </div>
+        </div>
+      
+        <!-- Additional Filters - Completely Fixed -->
+        <div class="mb-3">
+          <div class="form-check">
+            {% if request.GET.trending == 'on' %}
+            <input class="form-check-input" type="checkbox" id="trending" name="trending" checked>
+            {% else %}
+            <input class="form-check-input" type="checkbox" id="trending" name="trending">
+            {% endif %}
+            <label class="form-check-label" for="trending">
+              Trending Products
+            </label>
+          </div>
+      
+          <div class="form-check">
+            {% if request.GET.discount == 'on' %}
+            <input class="form-check-input" type="checkbox" id="discount" name="discount" checked>
+            {% else %}
+            <input class="form-check-input" type="checkbox" id="discount" name="discount">
+            {% endif %}
+            <label class="form-check-label" for="discount">
+              Discounted Products
+            </label>
+          </div>
+      
+          <div class="form-check">
+            {% if request.GET.in_stock == 'on' %}
+            <input class="form-check-input" type="checkbox" id="in_stock" name="in_stock" checked>
+            {% else %}
+            <input class="form-check-input" type="checkbox" id="in_stock" name="in_stock">
+            {% endif %}
+            <label class="form-check-label" for="in_stock">
+              In Stock
+            </label>
+          </div>
+        </div>
+      
+        <!-- Filter Buttons -->
+        <div class="d-grid gap-2">
+          <button type="submit" class="btn btn-primary">Apply Filters</button>
+          <button type="button" class="btn btn-outline-secondary" id="clear-filters">Clear All</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  {% endblock content %}
