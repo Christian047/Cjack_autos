@@ -854,13 +854,13 @@ section {
 
   .hero .hero-img {
     text-align: center;
-    margin-top: 80px;
+    margin-top: 60px;
   }
 
   .hero .hero-img img {
     /* width: 80%; */
   
-    width: 320px !important;
+    width: 300px !important;
    
     
   }

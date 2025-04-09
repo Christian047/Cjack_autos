@@ -58,33 +58,63 @@ def updateItem(request):
     productId = data['productId']
     action = data['action']
 
-    customer = request.user.customer
-    product = Products.objects.get(id=productId)
-    order, created = Order.objects.get_or_create(customer=customer, complete=False)
+    if request.user.is_authenticated:
+        # Existing logic for authenticated users
+        customer = request.user.customer
+        product = Products.objects.get(id=productId)
+        order, created = Order.objects.get_or_create(customer=customer, complete=False)
+        orderItem, created = OrderItem.objects.get_or_create(order=order, product=product)
 
-    orderItem, created = OrderItem.objects.get_or_create(order=order, product=product)
+        if action == 'add':
+            orderItem.quantity = (orderItem.quantity + 1)
+        elif action == 'remove':
+            orderItem.quantity = (orderItem.quantity - 1)
 
-    if action == 'add':
-        orderItem.quantity = (orderItem.quantity + 1)
-    elif action == 'remove':
-        orderItem.quantity = (orderItem.quantity - 1)
+        orderItem.save()
 
-    orderItem.save()
+        if orderItem.quantity <= 0:
+            orderItem.delete()
 
-    if orderItem.quantity <= 0:
-        orderItem.delete()
+        cart_count = order.get_cart_items
+    else:
+        # Logic for guest users using cookies
+        cart = json.loads(request.COOKIES.get('cart', '{}'))
+        
+        # Convert productId to string (as cart keys are strings)
+        productId = str(productId)
 
-    # Get the current cart count
-    cart_count = order.get_cart_items if hasattr(order, 'get_cart_items') else order.orderitem_set.all().count()
+        # Initialize product in cart if not exists
+        if productId not in cart:
+            cart[productId] = {'quantity': 0}
 
-    # Return JSON response with cart count
+        # Update quantity based on action
+        if action == 'add':
+            cart[productId]['quantity'] += 1
+        elif action == 'remove':
+            cart[productId]['quantity'] -= 1
+
+        # Remove item if quantity is 0 or less
+        if cart[productId]['quantity'] <= 0:
+            del cart[productId]
+
+        # Calculate cart count for guest
+        cart_count = sum(item['quantity'] for item in cart.values())
+
+        # Prepare response with updated cart
+        response = JsonResponse({
+            'message': 'Item was added',
+            'cart_count': cart_count
+        }, safe=False)
+
+        # Set the updated cart cookie
+        response.set_cookie('cart', json.dumps(cart))
+        return response
+
+    # Return JSON response with cart count for authenticated users
     return JsonResponse({
         'message': 'Item was added',
         'cart_count': cart_count
     }, safe=False)
-
-
-
 
 
 
