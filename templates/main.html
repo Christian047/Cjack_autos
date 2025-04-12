@@ -94,7 +94,7 @@
 
 
 
-<body>
+<body data-authenticated="{{ request.user.is_authenticated|lower }}">
 
 
   {% if messages %}
@@ -202,7 +202,7 @@
 
           
           <li>
-            <a class="getstarted scrollto" href="#about"> Advanced Filter</a>
+          <a class="getstarted scrollto" href="{% url 'filter:advanced_search' %}">Advanced Search</a>
           </li>
         </ul>
 

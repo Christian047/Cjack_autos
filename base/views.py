@@ -38,19 +38,7 @@ class Home(View):
 
 
 
-# def autocomplete(request):
-#     if 'term' in request.GET:
-#         term = request.GET.get('term', '').strip()
-#         qs = Product.objects.filter(name__icontains=term) if term else []
-        
-#         if qs.exists():
-#             titles = [{"label": product.name, "url": f"/product_details/{product.pk}/"} for product in qs]
-#         else:
-#             titles = [{"label": "No results found", "url": "#"}]  # Placeholder, no redirect
-        
-#         return JsonResponse(titles, safe=False)
-    
-#     return render(request, 'base/index1.html')
+
 
 
 def autocomplete(request):
@@ -68,41 +56,6 @@ def autocomplete(request):
 
 
 
-
-
-# # @login_required
-# @require_POST
-# def toggle_wishlist(request):
-#     product_id = request.POST.get('product_id')
-#     product = get_object_or_404(Products, id=product_id)
-    
-#     # Check if this product is already in the user's wishlist
-#     wishlist_item = WishlistItem.objects.filter(user=request.user, product=product).first()
-    
-#     if wishlist_item:
-#         # Product is in wishlist, so remove it
-#         wishlist_item.delete()
-#         in_wishlist = False
-#     else:
-#         # Product is not in wishlist, so add it
-#         WishlistItem.objects.create(user=request.user, product=product)
-#         in_wishlist = True
-    
-#     return JsonResponse({
-#         'success': True,
-#         'in_wishlist': in_wishlist,
-#         'product_id': product_id
-#     })
-
-
-# # @login_required
-# def wishlist(request):
-#     wishlist_items = WishlistItem.objects.filter(user=request.user).select_related('product')
-    
-#     context = {
-#         'wishlist_items': wishlist_items
-#     }
-#     return render(request, 'base/wishlist.html', context)
 
 
 
@@ -188,11 +141,6 @@ def wishlist(request):
 
 
 
-class Blog(View):
-    def get(self, request):
-        catalogue = Catalogue.objects.all()
-        context = {'catalogue': catalogue}
-        return render(request, 'base/blog.html', context)
 
         
 
@@ -216,15 +164,144 @@ class ProductView(View):
     
 
 
-class ProductDetailView(View):
-    def get(self,request,pk):
-        single_product = Products.objects.get(pk=pk)
-        context ={'single_product': single_product}
-        return render(request, 'base/product-details.html', context)
+
+# import logging
+# import json
+
+# # Set up logger
+# logger = logging.getLogger(__name__)
 
 # class ProductDetailView(View):
-#     def get(self,request):
-#        return render(request, 'base/product-details.html')
+#     def get(self, request, pk):
+#         # Log request details
+#         logger.info(f"ProductDetailView accessed for product ID: {pk}")
+#         logger.info(f"Request method: {request.method}")
+#         logger.info(f"Request headers: {dict(request.headers)}")
+#         logger.info(f"Request GET params: {dict(request.GET)}")
+        
+#         try:
+#             single_product = Products.objects.get(pk=pk)
+#             logger.info(f"Found product: {single_product.name} (ID: {single_product.id})")
+            
+#             # Check for JSON request with detailed logging
+#             accept_header = request.headers.get('accept', '')
+#             content_type = request.headers.get('content-type', '')
+#             format_param = request.GET.get('format', '')
+            
+#             logger.info(f"Accept header: {accept_header}")
+#             logger.info(f"Content-Type header: {content_type}")
+#             logger.info(f"Format param: {format_param}")
+            
+#             is_json_request = (
+#                 'application/json' in accept_header or
+#                 content_type.startswith('application/json') or
+#                 format_param == 'json'
+#             )
+            
+#             logger.info(f"Is JSON request: {is_json_request}")
+            
+#             if is_json_request:
+#                 # Return JSON response for AJAX requests
+#                 data = {
+#                     'id': single_product.id,
+#                     'name': single_product.name,
+#                     'price': single_product.price,
+#                     'picture': single_product.picture.url if hasattr(single_product.picture, 'url') else None,
+#                 }
+#                 logger.info(f"Returning JSON response: {json.dumps(data)}")
+#                 return JsonResponse(data)
+#             else:
+#                 # Return HTML for normal page views
+#                 logger.info(f"Returning HTML template: base/product-details.html")
+#                 context = {'single_product': single_product}
+#                 return render(request, 'base/product-details.html', context)
+                
+#         except Products.DoesNotExist:
+#             logger.error(f"Product with ID {pk} not found")
+#             if is_json_request:
+#                 return JsonResponse({'error': f'Product {pk} not found'}, status=404)
+#             else:
+#                 return render(request, 'base/404.html', status=404)
+#         except Exception as e:
+#             logger.error(f"Error in ProductDetailView: {str(e)}")
+#             if is_json_request:
+#                 return JsonResponse({'error': str(e)}, status=500)
+#             else:
+#                 return render(request, 'base/500.html', status=500)
+
+
+
+
+
+class ProductDetailView(View):
+    def get(self, request, pk):
+        try:
+            single_product = Products.objects.get(pk=pk)
+            
+            # Check if request wants JSON (either from query param or Accept header)
+            wants_json = (
+                request.GET.get('format') == 'json' or
+                'application/json' in request.headers.get('accept', '')
+            )
+            
+            if wants_json:
+                # Return JSON for cart updates
+                data = {
+                    'id': single_product.id,
+                    'name': single_product.name,
+                    'price': single_product.price,
+                    'picture': single_product.picture.url if hasattr(single_product.picture, 'url') else None,
+                }
+                return JsonResponse(data)
+            else:
+                # Return HTML for normal page visits
+                context = {'single_product': single_product}
+                return render(request, 'base/product-details.html', context)
+                
+        except Products.DoesNotExist:
+            if wants_json:
+                return JsonResponse({'error': 'Product not found'}, status=404)
+            else:
+                return render(request, 'base/404.html', status=404)
+
+
+
+
+
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
+import json
+
+@method_decorator(csrf_exempt, name='dispatch')
+class SyncGuestCartView(View):
+    def post(self, request):
+        try:
+            # Parse the JSON data from the request
+            data = json.loads(request.body)
+            
+            # Process the cart data as needed
+            # For now, just return success response
+            return JsonResponse({
+                'status': 'success', 
+                'message': 'Cart synced successfully',
+                'cart_items': len(data.get('items', [])),
+            })
+            
+        except json.JSONDecodeError:
+            return JsonResponse({
+                'status': 'error',
+                'message': 'Invalid JSON data'
+            }, status=400)
+            
+        except Exception as e:
+            return JsonResponse({
+                'status': 'error',
+                'message': str(e)
+            }, status=500)
+
+
+
 
 
 def car_model_items(request, pk):

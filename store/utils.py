@@ -107,6 +107,13 @@ def guestOrder(request, data):
     return customer, order
 
 
+
+
+
+
+
+
+
 # import json
 # from .models import *
 

@@ -12,6 +12,7 @@ urlpatterns = [
     path('payments/', include('payments.urls')),
     path('receipts/', include('receipts.urls')),
     path('order/', include('order_view.urls')),
+    path('filter/', include('filter.urls')),
 
     ]
 

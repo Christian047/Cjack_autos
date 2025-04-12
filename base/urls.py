@@ -12,4 +12,5 @@ urlpatterns = [
     path('car_model/<int:pk>/', car_model_items, name='car_model'),
     
     path('autocomplete/', autocomplete, name='autocomplete'),
+    path('sync_guest_cart/', SyncGuestCartView.as_view(), name='sync_guest_cart'),
 ]

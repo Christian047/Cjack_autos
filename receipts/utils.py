@@ -123,12 +123,12 @@ def generate_receipt_pdf(order):
         # Here you would add shipping address details if available in your model
         elements.append(Paragraph("Please ensure your shipping address is up to date in your account.", styles['Normal']))
     
-    # Digital products note
-    has_digital = any(item.product.digital for item in order_items)
-    if has_digital:
-        elements.append(Spacer(1, 15))
-        elements.append(Paragraph("Digital Products:", styles['Heading4']))
-        elements.append(Paragraph("Digital products will be available in your account.", styles['Normal']))
+    # # Digital products note
+    # has_digital = any(item.product.digital for item in order_items)
+    # if has_digital:
+    #     elements.append(Spacer(1, 15))
+    #     elements.append(Paragraph("Digital Products:", styles['Heading4']))
+    #     elements.append(Paragraph("Digital products will be available in your account.", styles['Normal']))
     
     # Footer
     elements.append(Spacer(1, 30))

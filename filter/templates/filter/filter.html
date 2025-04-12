@@ -1,0 +1,663 @@
+{% extends 'main.html' %}
+
+{% block content %}
+
+<br>
+<br>
+<div class="container mt-5">
+    <h2 class="mb-4">Advanced Product Search</h2>
+
+    <!-- Search Form -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form id="product-search-form">
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <label for="car_model">Car Model</label>
+                        <select class="form-control" id="car_model" name="car_model">
+                            <option value="">All Car Models</option>
+                            {% for model in car_models %}
+                            <option value="{{ model.id }}">{{ model.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="col-md-3 mb-3">
+                        <label for="chassis">Chassis</label>
+                        <select class="form-control" id="chassis" name="chassis">
+                            <option value="">All Chassis Types</option>
+                            {% for choice in chassis_choices %}
+                            <option value="{{ choice.0 }}">{{ choice.1 }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label>Price Range: <span id="price-range-display">₦0 - ₦1,000,000</span></label>
+                        <div id="price-slider" class="mt-2"></div>
+                        <input type="hidden" id="price_min" name="price_min">
+                        <input type="hidden" id="price_max" name="price_max">
+                    </div>
+
+                    <div class="col-md-3 mb-3">
+                        <label for="rating">Minimum Rating</label>
+                        <select class="form-control" id="rating" name="rating">
+                            <option value="">Any Rating</option>
+                            <option value="4.5">4.5 and above</option>
+                            <option value="4">4.0 and above</option>
+                            <option value="3.5">3.5 and above</option>
+                            <option value="3">3.0 and above</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <button type="button" id="search-btn" class="btn btn-primary">Search</button>
+                        <button type="button" id="reset-btn" class="btn btn-secondary ml-2">Reset</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Results Section -->
+    <div id="search-results">
+        <div id="error-message" class="alert alert-danger d-none"></div>
+
+        <!-- Products Table -->
+        <div class="table-responsive">
+            <table class="table table-hover" id="products-table">
+                <thead class="bg-primary text-white">
+                    <tr>
+                        <th style="width: 80px;">Image</th>
+                        <th>Product</th>
+                        <th style="width: 100px;">Price</th>
+                        <th style="width: 170px;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="products-container">
+                    <!-- Products will be loaded here via AJAX -->
+                </tbody>
+            </table>
+        </div>
+
+        <div id="loading" class="text-center my-4 d-none">
+            <div class="spinner-border text-primary" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
+        </div>
+        <div id="no-results" class="alert alert-info text-center d-none">
+            No products found matching your criteria.
+        </div>
+    </div>
+</div>
+
+<!-- Product Row Template (for JavaScript) -->
+<template id="product-row-template">
+    <tr>
+        <td class="text-center align-middle" style="width: 80px;">
+            <img src="" class="img-thumbnail product-image" style="max-height: 60px; max-width: 60px;"
+                alt="Product Image">
+        </td>
+        <td class="align-middle">
+            <div class="product-info">
+                <h6 class="product-name mb-1 font-weight-bold"></h6>
+                <div class="small text-muted">
+                    For <span class="product-car-model"></span> <span class="product-chassis"></span>
+                </div>
+            </div>
+        </td>
+
+<td class="align-middle">
+    <strong>₦<span class="product-price">{{ product.price }}</span></strong>
+</td>
+<td class="align-middle">
+    <div class="btn-group">
+        <a href="#" class="btn btn-sm btn-primary view-details">
+            <i class="fas fa-eye"></i>
+        </a>
+        <button type="button" class="btn btn-sm btn-success update-cart" data-product="{{ product.id }}"
+            data-action="add">
+            <i class="fas fa-cart-plus"></i>
+        </button>
+    </div>
+</td>
+        
+    </tr>
+</template>
+
+<!-- Add noUiSlider CSS to your head section -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/14.6.3/nouislider.min.css">
+
+<!-- Custom styles for noUiSlider -->
+<style>
+    /* Main slider track - sleeker and smaller */
+    .noUi-target {
+        background-color: #f0f0f0;
+        border: none;
+        box-shadow: none;
+        border-radius: 3px;
+        height: 4px;
+        /* Reduced height */
+        margin: 15px 10px 30px 10px;
+        /* Add space for tooltips and pips */
+    }
+
+    /* Active part of the slider (between handles) */
+    .noUi-connect {
+        background: linear-gradient(90deg, #0062cc, #007bff);
+        /* Gradient for more depth */
+    }
+
+    /* Slider handles - smaller and more elegant */
+    .noUi-handle {
+        background: #ffffff;
+        border: 1px solid #007bff;
+        box-shadow: 0 1px 5px rgba(0, 123, 255, 0.3);
+        cursor: pointer;
+        border-radius: 50%;
+        height: 14px !important;
+        /* Smaller handle */
+        width: 14px !important;
+        /* Smaller handle */
+        top: -5px !important;
+        transition: transform 0.2s, box-shadow 0.2s;
+        /* Smooth transition for hover effects */
+    }
+
+    /* Remove default handle styling (the lines inside the handle) */
+    .noUi-handle:before,
+    .noUi-handle:after {
+        display: none;
+    }
+
+    /* Hover/active state for handles - subtle zoom effect */
+    .noUi-handle:hover,
+    .noUi-handle:active {
+        transform: scale(1.2);
+        box-shadow: 0 0 0 5px rgba(0, 123, 255, 0.1);
+    }
+
+    /* Style for the pips (markers) - more minimal */
+    .noUi-pips {
+        color: #adb5bd;
+        font-size: 11px;
+    }
+
+    .noUi-marker {
+        background: #dee2e6;
+    }
+
+    .noUi-marker-large {
+        background: #ced4da;
+    }
+
+    .noUi-value {
+        font-size: 10px;
+        color: #6c757d;
+    }
+
+    /* Style for the tooltip - sleeker and smaller */
+    .noUi-tooltip {
+        background-color: #007bff;
+        border: none;
+        color: white;
+        font-size: 11px;
+        padding: 1px 4px;
+        border-radius: 2px;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+        bottom: -22px;
+        /* Position below the handle */
+        transform: translate(-50%, 0);
+        white-space: nowrap;
+    }
+
+    /* When dragging, make tooltip more prominent */
+    .noUi-active .noUi-tooltip {
+        transform: translate(-50%, 0) scale(1.05);
+    }
+
+    /* Specific styling for the horizontal slider */
+    .noUi-horizontal .noUi-origin {
+        transition: left 0.1s ease;
+    }
+</style>
+
+<!-- Add noUiSlider JS before your script -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/14.6.3/nouislider.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/wnumb/1.2.0/wNumb.min.js"></script>
+
+
+
+<script>
+
+
+document.addEventListener('DOMContentLoaded', function () {
+    const searchBtn = document.getElementById('search-btn');
+    const resetBtn = document.getElementById('reset-btn');
+    const searchForm = document.getElementById('product-search-form');
+    const productsContainer = document.getElementById('products-container');
+    const loadingIndicator = document.getElementById('loading');
+    const noResultsMessage = document.getElementById('no-results');
+    const productTemplate = document.getElementById('product-row-template');
+    const priceRangeDisplay = document.getElementById('price-range-display');
+    const priceMinInput = document.getElementById('price_min');
+    const priceMaxInput = document.getElementById('price_max');
+
+    // Add error message div to your HTML if it doesn't exist
+    if (!document.getElementById('error-message')) {
+        const errorDiv = document.createElement('div');
+        errorDiv.id = 'error-message';
+        errorDiv.className = 'alert alert-danger d-none';
+        document.getElementById('search-results').prepend(errorDiv);
+    }
+
+    const errorMessage = document.getElementById('error-message');
+
+    // Initialize price slider
+    const priceSlider = document.getElementById('price-slider');
+
+    if (noUiSlider) {
+        noUiSlider.create(priceSlider, {
+            start: [0, 1000000],
+            connect: true,
+            step: 5000,
+            range: {
+                'min': 0,
+                'max': 10000000
+            },
+            format: wNumb({
+                decimals: 0,
+                thousand: ',',
+            }),
+            tooltips: [wNumb({ decimals: 0, thousand: ',', prefix: '₦' }), wNumb({ decimals: 0, thousand: ',', prefix: '₦' })],
+            pips: {
+                mode: 'positions',
+                values: [0, 25, 50, 75, 100],
+                density: 4,
+                format: wNumb({
+                    decimals: 0,
+                    thousand: ',',
+                    prefix: '₦'
+                })
+            }
+        });
+
+        // Update hidden inputs and display when slider changes
+        priceSlider.noUiSlider.on('update', function (values) {
+            // Remove commas and the ₦ symbol for storing in inputs
+            const min = values[0].replace(/₦|,/g, '');
+            const max = values[1].replace(/₦|,/g, '');
+
+            priceMinInput.value = min;
+            priceMaxInput.value = max;
+            priceRangeDisplay.textContent = `₦${values[0].replace('₦', '')} - ₦${values[1].replace('₦', '')}`;
+        });
+    } else {
+        console.error('noUiSlider not loaded');
+        // Fallback to regular inputs if noUiSlider is not available
+        const sliderContainer = document.getElementById('price-slider').parentElement;
+        sliderContainer.innerHTML = `
+            <div class="row">
+                <div class="col-md-6">
+                    <input type="number" class="form-control" id="price_min" name="price_min" placeholder="Min Price">
+                </div>
+                <div class="col-md-6">
+                    <input type="number" class="form-control" id="price_max" name="price_max" placeholder="Max Price">
+                </div>
+            </div>
+        `;
+    }
+
+    // Debug logger function
+    function logDebug(message, data = null) {
+        if (window.console && window.console.debug) {
+            if (data) {
+                console.debug(`[Product Search] ${message}`, data);
+            } else {
+                console.debug(`[Product Search] ${message}`);
+            }
+        }
+    }
+
+    // Function to format price in Naira
+    function formatNairaPrice(price) {
+        if (typeof price !== 'number') {
+            return 'Call for price';
+        }
+
+        return new Intl.NumberFormat('en-NG').format(price);
+    }
+
+    // Function to validate form inputs
+    function validateForm() {
+        let isValid = true;
+        let errorMessages = [];
+
+        const priceMin = priceMinInput.value.replace(/,/g, '');
+        const priceMax = priceMaxInput.value.replace(/,/g, '');
+
+        // Validate price range
+        if (priceMin && priceMax && parseInt(priceMin) > parseInt(priceMax)) {
+            errorMessages.push('Minimum price cannot be greater than maximum price');
+            isValid = false;
+        }
+
+        // Display validation errors if any
+        if (!isValid) {
+            errorMessage.innerHTML = errorMessages.join('<br>');
+            errorMessage.classList.remove('d-none');
+        } else {
+            errorMessage.classList.add('d-none');
+        }
+
+        return isValid;
+    }
+
+    // Event delegation for update-cart buttons
+    document.addEventListener('click', function (e) {
+        if (e.target && e.target.closest('.update-cart')) {
+            const button = e.target.closest('.update-cart');
+            const productId = button.dataset.product;
+            const action = button.dataset.action;
+
+            console.log('Update cart button clicked:', productId, action);
+            
+            // Use the same update function for both guest and authenticated users
+            updateCart(productId, action);
+        }
+    });
+
+    // UPDATED: Single function to handle cart updates for all users
+ function updateCart(productId, action) {
+    console.log('Cart update:', productId, action);
+
+    // Use absolute path starting with / to ensure correct URL
+    fetch('/store/update_item/', {  // Make sure this matches your actual URL path
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCsrfToken(),
+        },
+        body: JSON.stringify({
+            'productId': productId,
+            'action': action
+        })
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Server error: ' + response.status);
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log('Cart updated:', data);
+        
+        // Update cart count
+        if (data.cart_count !== undefined) {
+            updateCartCount(data.cart_count);
+        }
+
+        // Show success notification
+        const productRow = document.querySelector(`.update-cart[data-product="${productId}"]`).closest('tr');
+        const productName = productRow.querySelector('.product-name').textContent;
+        showAddToCartToast(productName);
+    })
+    .catch(error => {
+        console.error('Error updating cart:', error);
+        showErrorToast('Could not update cart: ' + error.message);
+    });
+}
+    // Helper function to get CSRF token
+    function getCsrfToken() {
+        const name = 'csrftoken';
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    // Helper function to show toast notification
+    function showAddToCartToast(productName) {
+        const toast = `
+            <div class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-delay="3000" style="position: fixed; bottom: 20px; right: 20px; z-index: 9999;">
+                <div class="toast-header bg-success text-white">
+                    <strong class="mr-auto">Added to Cart</strong>
+                    <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="toast-body">
+                    ${productName} has been added to your cart.
+                </div>
+            </div>
+        `;
+
+        // Append toast to the body
+        const toastContainer = document.createElement('div');
+        toastContainer.innerHTML = toast;
+        document.body.appendChild(toastContainer.firstChild);
+
+        // Show the toast using Bootstrap's toast method
+        $('.toast').toast('show');
+    }
+
+    // Helper function to show error toast
+    function showErrorToast(message) {
+        const toast = `
+            <div class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-delay="3000" style="position: fixed; bottom: 20px; right: 20px; z-index: 9999;">
+                <div class="toast-header bg-danger text-white">
+                    <strong class="mr-auto">Error</strong>
+                    <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="toast-body">
+                    ${message}
+                </div>
+            </div>
+        `;
+
+        const toastContainer = document.createElement('div');
+        toastContainer.innerHTML = toast;
+        document.body.appendChild(toastContainer.firstChild);
+
+        $('.toast').toast('show');
+    }
+
+function updateCartCount(count) {
+    // Use getElementById since your cart count has an ID, not a class
+    const cartCountElement = document.getElementById('cart-count');
+    
+    if (cartCountElement) {
+        cartCountElement.textContent = count;
+
+        // Optional: add a brief animation to highlight the change
+        cartCountElement.classList.add('highlight');
+        setTimeout(() => {
+            cartCountElement.classList.remove('highlight');
+        }, 300);
+    } else {
+        console.warn('Cart count element not found - make sure there is an element with ID "cart-count"');
+    }
+}
+
+
+
+    // Function to perform the search
+    function performSearch() {
+        logDebug('Search initiated');
+
+        // Validate form before proceeding
+        if (!validateForm()) {
+            logDebug('Form validation failed');
+            return;
+        }
+
+        const formData = new FormData(searchForm);
+        const searchParams = new URLSearchParams();
+
+        for (const [key, value] of formData.entries()) {
+            // Remove commas from price values
+            if (key === 'price_min' || key === 'price_max') {
+                searchParams.append(key, value.replace(/,/g, ''));
+            } else if (value) {
+                searchParams.append(key, value);
+            }
+            logDebug(`Parameter: ${key} = ${value}`);
+        }
+
+        // Show loading indicator
+        loadingIndicator.classList.remove('d-none');
+        productsContainer.innerHTML = '';
+        noResultsMessage.classList.add('d-none');
+        errorMessage.classList.add('d-none');
+
+        logDebug('Sending AJAX request to: /api/products/search?' + searchParams.toString());
+
+        // Make AJAX request
+        fetch('/filter/api/products/search/?' + searchParams.toString())
+            .then(response => {
+                if (!response.ok) {
+                    logDebug(`Server returned status: ${response.status}`);
+                    return response.json().then(errorData => {
+                        throw new Error(`Server error: ${errorData.error || response.statusText}`);
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Hide loading indicator
+                loadingIndicator.classList.add('d-none');
+
+                logDebug(`Received ${data.length} products from server`, data);
+
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+
+                if (data.length === 0) {
+                    // Show no results message
+                    noResultsMessage.classList.remove('d-none');
+                    logDebug('No results found');
+                } else {
+                    // Render products
+                    data.forEach(product => {
+                        try {
+                            const productRow = document.importNode(productTemplate.content, true);
+
+                            // Set product details
+                            productRow.querySelector('.product-name').textContent = product.name || 'Unnamed Product';
+
+                            // Combine car model and chassis into one line
+                            const carModel = product.car_model_name || '';
+                            const chassis = product.chassis || '';
+
+                            if (carModel && chassis) {
+                                productRow.querySelector('.product-car-model').textContent = carModel;
+                                productRow.querySelector('.product-chassis').textContent = `(${chassis})`;
+                            } else if (carModel) {
+                                productRow.querySelector('.product-car-model').textContent = carModel;
+                                productRow.querySelector('.product-chassis').textContent = '';
+                            } else if (chassis) {
+                                productRow.querySelector('.product-car-model').textContent = chassis;
+                                productRow.querySelector('.product-chassis').textContent = '';
+                            } else {
+                                // Hide the entire line if no car model or chassis
+                                const infoDiv = productRow.querySelector('.product-info div.small');
+                                infoDiv.style.display = 'none';
+                            }
+
+                            // Format price in Naira
+                            productRow.querySelector('.product-price').textContent = 
+                                typeof product.price === 'number' ? formatNairaPrice(product.price) : 'Call';
+
+                            // Set product image with error handling
+                            const imgElement = productRow.querySelector('.product-image');
+                            if (product.picture) {
+                                imgElement.src = product.picture;
+                                imgElement.onerror = function () {
+                                    this.src = '/static/images/no-image.png';
+                                    logDebug(`Image failed to load for product ${product.id}`);
+                                };
+                            } else {
+                                imgElement.src = '/static/images/no-image.png';
+                            }
+
+                            // Set view details link
+                            const detailsLink = productRow.querySelector('.view-details');
+                            if (product.id) {
+                                detailsLink.href = '/single_product/' + product.id + '/';
+                            } else {
+                                detailsLink.href = '#';
+                                detailsLink.classList.add('disabled');
+                            }
+
+                            // Set product id for the Add to Cart button
+                            const addToCartBtn = productRow.querySelector('.update-cart');
+                            addToCartBtn.setAttribute('data-product', product.id || '');
+
+                            // Add to container
+                            productsContainer.appendChild(productRow);
+
+                        } catch (cardError) {
+                            console.error('Error rendering product row:', cardError);
+                            logDebug(`Failed to render product: ${product.id || 'unknown'}`);
+                        }
+                    });
+
+                    logDebug('All products rendered successfully');
+                }
+            })
+            .catch(error => {
+                console.error('Search error:', error);
+                loadingIndicator.classList.add('d-none');
+
+                // Display error message
+                errorMessage.textContent = 'An error occurred while searching for products: ' + error.message;
+                errorMessage.classList.remove('d-none');
+
+                logDebug('Search failed with error: ' + error.message);
+            });
+    }
+
+    // Function to reset the form
+    function resetForm() {
+        logDebug('Form reset initiated');
+        searchForm.reset();
+
+        // Reset the price slider if it exists
+        if (priceSlider.noUiSlider) {
+            priceSlider.noUiSlider.set([0, 1000000]);
+        }
+
+        productsContainer.innerHTML = '';
+        noResultsMessage.classList.add('d-none');
+        errorMessage.classList.add('d-none');
+
+        // Optionally load all products after reset
+        performSearch();
+    }
+
+    // Event listeners
+    searchBtn.addEventListener('click', performSearch);
+    resetBtn.addEventListener('click', resetForm);
+
+    // Initial load of products
+    logDebug('Initializing product search');
+    performSearch();
+});
+
+</script>
+
+
+{% endblock %}
